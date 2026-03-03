@@ -8,21 +8,21 @@
 		<h1 class="text-2xl font-bold md:text-2xl">Notifications</h1>
 	</div>
 
-	<div class="flex h-12 w-full gap-3 p-2 justify-center md:p-2 md:justify-center md:gap-4">
+	<div class="flex h-12 w-full gap-3 p-2 justify-between md:p-2 md:gap-4 border-0 md:justify-between">
 		{#each ['All', 'Read', 'Unread'] as item}
 			<label
-				class="flex flex-1 cursor-pointer items-center justify-center rounded-lg text-base font-semibold transition
-				md:h-10 md:w-58 md:flex-none md:text-lg
+				class="flex w-full cursor-pointer items-center justify-center rounded-lg text-base font-semibold transition
+			    md:text-lg md:flex-1
 				{filter === item ? 'bg-[rgba(18,149,117,1)] text-white' : 'bg-white text-green-600'}"
 			>
-				<input type="radio" name="filter" value={item} bind:group={filter} class="hidden" />
+				<input type="radio" name="filter" value={item} bind:group={filter} class="hidden" /> 
 				{item}
 			</label>
 		{/each}
 	</div>
 
 	<div class="flex-1 overflow-y-auto">
-		<div class="mx-auto w-full max-w-3xl space-y-6 p-4">
+		<div class="mx-auto w-full max-w-full space-y-6 p-4">
 			
 			<div class="space-y-3">
 				<h1 class="text-center text-lg font-bold">Today</h1>
