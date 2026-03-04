@@ -1,5 +1,5 @@
 <script>
-	let filter = 'All';
+	let activeItem = 'All';
 </script>
 
 <div class="flex min-h-screen w-full flex-col md:p-5">
@@ -8,16 +8,17 @@
 		<h1 class="text-2xl font-bold md:text-2xl">Notifications</h1>
 	</div>
 
-	<div class="flex h-12 w-full gap-3 p-2 justify-between md:p-2 md:gap-4 border-0 md:justify-between">
+	<div class="flex h-12 w-full gap-3 p-2 justify-between md:p-1 md:gap-3 border-0 md:justify-between">
 		{#each ['All', 'Read', 'Unread'] as item}
-			<label
+			<button
+			    type="button"
 				class="flex w-full cursor-pointer items-center justify-center rounded-lg text-base font-semibold transition
 			    md:text-lg md:flex-1
-				{filter === item ? 'bg-[rgba(18,149,117,1)] text-white' : 'bg-white text-green-600'}"
+				{activeItem === item ? 'bg-[rgba(18,149,117,1)] text-white' : 'bg-white text-green-600'}"
+				on:click={() => (activeItem = item)}
 			>
-				<input type="radio" name="filter" value={item} bind:group={filter} class="hidden" /> 
 				{item}
-			</label>
+	</button>
 		{/each}
 	</div>
 

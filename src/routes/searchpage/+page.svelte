@@ -34,7 +34,6 @@
       await resetSearch();
       return;
     }
-
     isSearching = true;
     meals = await searchMeals(term);
   }
@@ -80,6 +79,7 @@
     bind:selectedRate
     onSearch={runSearch}
     onDebouncedSearch={runSearch}
+    onApplyFilter={runSearch}
   />
 
   <div class="mt-4 flex justify-between items-center">
@@ -91,7 +91,7 @@
       {:else if query && meals.length === 0}
         No recipes found
       {:else}
-        Search Results
+        Search Results 
       {/if}
     </h2>
 

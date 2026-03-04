@@ -1,7 +1,9 @@
-<div class="flex h-44 animate-pulse items-center justify-between gap-4 overflow-auto p-2">
-	<div class="relative flex w-60 shrink-0 flex-col rounded-lg bg-gray-50 p-2">
-		<div class="h-15 w-30"></div>
 
-		<div class="flex gap-10"></div>
+	<div class="relative mt-10 animate-pulse flex w-60 h-30 shrink-0 flex-col rounded-lg bg-gray-200 p-2">
+		
+     <div
+							class="absolute -top-5 right-3 h-16 w-16 md:h-20 md:w-20 rounded-full bg-gray-300 object-cover"
+						></div>
+		
 	</div>
-</div>
+

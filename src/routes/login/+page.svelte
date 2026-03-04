@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
 	import { goto } from '$app/navigation';
 
-	function navigateTohomepage() {
+	function navigateTohomepage(): void {
 		goto(`/homepage`);
 	}
 </script>

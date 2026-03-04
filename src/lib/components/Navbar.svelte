@@ -1,9 +1,9 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { House, Bookmark, Bell, User } from 'lucide-svelte';
 
-  function goToRoute(route) {
+  function goToRoute(route: string): void {
     goto(route);
   }
 </script>
@@ -17,7 +17,7 @@
       class:text-green-600={$page.url.pathname === '/homepage'}
       on:click={() => goToRoute('/homepage')}
     >
-      <House size="30" />
+      <House size={30} />
     </button>
 
     <button
@@ -25,7 +25,7 @@
       class:text-green-600={$page.url.pathname === '/savedpage'}
       on:click={() => goToRoute('/savedpage')}
     >
-      <Bookmark size="30" />
+      <Bookmark size={30} />
     </button>
 
     <button on:click={() => goToRoute('/addeditpage')}>
@@ -41,7 +41,7 @@
       class:text-green-600={$page.url.pathname === '/notificationpage'}
       on:click={() => goToRoute('/notificationpage')}
     >
-      <Bell size="30" />
+      <Bell size={30} />
     </button>
 
     <button
@@ -49,7 +49,7 @@
       class:text-green-600={$page.url.pathname === '/profilepage'}
       on:click={() => goToRoute('/profilepage')}
     >
-      <User size="30" />
+      <User size={30} />
     </button>
 
   </nav>

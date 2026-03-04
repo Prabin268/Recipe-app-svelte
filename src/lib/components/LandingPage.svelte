@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
 	
-  function navigateTologin() {
+  function navigateTologin(): void {
     goto(`/login`);
   }
 </script>
@@ -12,7 +12,7 @@
   <div class="flex flex-col min-h-screen w-full max-w-md mx-auto justify-center items-center gap-14">
 
     <div class="w-20 h-10">
-      <img src="/hat.png" alt="hat">
+      <img src="/hat.png" alt="hat" />
     </div>
 
     <h1 class="text-[20px] text-white mb-30">100K+ Premium Recipe</h1>

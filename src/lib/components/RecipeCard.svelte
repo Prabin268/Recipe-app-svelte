@@ -1,15 +1,15 @@
-<script>
+<script lang="ts">
 	import { Bookmark } from 'lucide-svelte';
 	import { savedMeals } from '$lib/stores/savedMeals';
-	
+	import type { Meal } from '$lib/api/meals';
 
-	export let meal;
+	export let meal: Meal;
 
-	let isSaved = false;
+	let isSaved: boolean = false;
 
 	$: isSaved = $savedMeals.some((m) => m.id === meal.idMeal);
 
-	function toggleSaveMeal() {
+	function toggleSaveMeal(): void {
 		savedMeals.toggle(meal);
 	}
 </script>

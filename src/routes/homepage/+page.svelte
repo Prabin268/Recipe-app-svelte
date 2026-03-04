@@ -20,7 +20,6 @@
 	let selectedTime = 'All';
 	let selectedRate = null;
 
-	
 	onMount(async () => {
 		isLoading = true;
 		try {
@@ -116,7 +115,7 @@
 
 	{#if isLoading}
 		<div class="flex flex-row gap-5 overflow-x-auto p-2">
-			{#each Array(6) as _}
+			{#each Array(10) as _}
 				<RecipeCardSkeleton />
 			{/each}
 		</div>
@@ -131,7 +130,7 @@
 	{/if}
 
 	{#if isLoading}
-		<div class="mt-4 flex flex-col">
+		<div class="flex flex-row gap-5 overflow-x-auto p-2">
 			{#each Array(6) as _}
 				<NewRecipesSkeleton />
 			{/each}
@@ -139,17 +138,19 @@
 	{:else}
 		<div class="flex flex-col p-2">
 			<p class="text-2xl font-bold">New Recipes</p>
-			<div class="flex h-40 items-center justify-between gap-4 overflow-x-auto">
+			<div class="flex h-45 items-center justify-between gap-4 overflow-x-auto">
 				{#each newRecipes as recipe}
-					<div class="relative flex w-60 shrink-0 flex-col rounded-lg bg-gray-100 p-2">
+	
+
+					<div class="relative flex w-60 shrink-0 flex-col rounded-lg bg-gray-200 p-2">
 						<div class="h-15 w-30 p-2">
 							<h1 class="truncate text-lg font-semibold">{recipe.strMeal}</h1>
 							<img src="./Rating.png" alt="rating" class="h-5 w-25" />
 						</div>
 						<img
-							src={recipe.strMealThumb}
-							alt={recipe.strMeal}
-							class="absolute -top-5 right-3 h-16 w-16 md:h-20 md:w-20 rounded-full object-cover"
+						src={recipe.strMealThumb}
+						alt={recipe.strMeal}
+						class="absolute -top-5 right-3 h-16 w-16 md:h-20 md:w-20 rounded-full object-cover"
 						/>
 						<div class="flex gap-8 p-2">
 							<img src="./Creator.png" alt="creator" />

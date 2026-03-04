@@ -1,16 +1,15 @@
-<script>
+<script lang="ts">
   import './layout.css';
   import { page } from '$app/stores';
   import Navbar from '$lib/components/Navbar.svelte';
   import Sidebar from '$lib/components/Sidebar.svelte';
 
-  const noLayoutRoutes = ['/', '/login', '/signup'];
+  const noLayoutRoutes: string[] = ['/', '/login', '/signup'];
 
-  const hideLayout = $derived(
-    noLayoutRoutes.includes($page.url.pathname)
-  );
+  let hideLayout: boolean;
 
-  let { children } = $props();
+  $: hideLayout = noLayoutRoutes.includes($page.url.pathname);
+
 </script>
 
 <svelte:head>
@@ -23,5 +22,5 @@
 {/if}
 
 <div class={hideLayout ? '' : 'pb-20 md:pl-56'}>
-  {@render children()}
+  <slot />
 </div>
