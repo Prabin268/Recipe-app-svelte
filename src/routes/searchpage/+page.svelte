@@ -1,31 +1,33 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { ArrowLeft } from 'lucide-svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import { searchMeals, getRandomMeals } from '$lib/api/meals';
+  import type { Meal } from '$lib/api/meals';
 
-  let query = '';
-  let meals = [];
-  let categories = [];
+  let query: string = '';
+  let meals: Meal[] = [];
+  let categories: string[] = [];
 
-  let selectedCategory = 'All';
-  let selectedTime = 'All';
-  let selectedRate = null;
+  let selectedCategory: string = 'All';
+  let selectedTime: string = 'All';
+  let selectedRate: number | null = null;
 
-  let isSearching = false;
+  let isSearching: boolean = false;
 
-  async function resetSearch() {
+  async function resetSearch(): Promise<void> {
     query = '';
     selectedCategory = 'All';
     selectedTime = 'All';
     selectedRate = null;
     isSearching = false;
+
     meals = await getRandomMeals();
   }
 
-  async function runSearch() {
+  async function runSearch(): Promise<void> {
     const term =
       query.trim() ||
       (selectedCategory !== 'All' ? selectedCategory : '');
@@ -38,19 +40,19 @@
     meals = await searchMeals(term);
   }
 
-  function goBack() {
+  function goBack(): void {
     goto('/homepage');
   }
 
   onMount(async () => {
 
-    const res = await fetch(
+    const res: Response = await fetch(
       'https://www.themealdb.com/api/json/v1/1/list.php?c=list'
     );
-    const data = await res.json();
+    const data: { meals: { strCategory: string }[] } = await res.json();
     categories = data.meals.map(c => c.strCategory);
 
-    const urlCategory = $page.url.searchParams.get('category');
+    const urlCategory: string | null = $page.url.searchParams.get('category');
 
     if (urlCategory) {
       selectedCategory = urlCategory;

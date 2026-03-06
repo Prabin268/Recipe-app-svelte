@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import SearchBar from '$lib/components/SearchBar.svelte';
 	import RecipeCard from '$lib/components/RecipeCard.svelte';
 	import { getAreas, getRandomMeals, searchMeals, getMealsByArea, getCategories  } from '$lib/api/meals';
@@ -6,19 +6,20 @@
 	import RecipeCardSkeleton from '$lib/components/RecipeCardSkeleton.svelte';
 	import NewRecipesSkeleton from '$lib/components/NewRecipesSkeleton.svelte';
 	import { goto } from '$app/navigation';
+	import type { Meal, Area, Category } from '$lib/api/meals';
 
-	let query = '';
-	let areas = [];
-	let allMeals = [];
-	let meals = [];
-	let activeArea = 'All';
-	let isLoading = false;
-	let newRecipes = [];
-	let categories = [];
+	let query: string = '';
+	let areas: Area[] = [];
+	let allMeals: Meal[] = [];
+	let meals: Meal[] = [];
+	let activeArea: string = 'All';
+	let isLoading: boolean = false;
+	let newRecipes:Meal[] = [];
+	let categories: Category[] = [];
 
-	let selectedCategory = 'All';
-	let selectedTime = 'All';
-	let selectedRate = null;
+	let selectedCategory: string = 'All';
+	let selectedTime: string = 'All';
+	let selectedRate: number | null = null;
 
 	onMount(async () => {
 		isLoading = true;
@@ -35,7 +36,7 @@
 		}
 	});
 
-	async function selectArea(area) {
+	async function selectArea(area: string) {
 		activeArea = area;
 		isLoading = true;
 		try {
@@ -51,23 +52,24 @@
 		}
 	}
 
-	function pushYoutube(strYoutube) {
+	function pushYoutube(strYoutube?: string) {
 		if (typeof window === 'undefined') return;
+		if (!strYoutube) return;
 		localStorage.setItem('currentYoutube', strYoutube);
 	}
 
-	function navigateToSearch() {
+	function navigateToSearch(): void {
 		goto('/searchpage');
 	}
 
 	
-	function onCategorySelect(cat) {
+	function onCategorySelect(cat: string): void {
 		selectedCategory = cat;
 		console.log('Category selected:', cat);
 		
 	}
 
-	function onApplyFilter() {
+	function onApplyFilter(): void {
 		console.log('Filter applied!', { selectedCategory, selectedTime, selectedRate });
 		
 	}
@@ -85,9 +87,9 @@
 
 	<SearchBar
 		enableNavigation={true}
-	categories={categories.map(c => c.strCategory)}
+	categories={categories.map(c => c.strCategory ?? '')}
 	on:openSearch={navigateToSearch}
-	on:categorySelect={(e) => {
+	on:categorySelect={(e: CustomEvent<string>) => {
 		const cat = e.detail;
 		if (cat) {
 			goto(`/searchpage?category=${encodeURIComponent(cat)}`);
@@ -103,10 +105,10 @@
 			All
 		</button>
 
-		{#each areas as area}
+		{#each areas as area (area.strArea)}
 			<button
 				class={`rounded-xl px-4 py-2 whitespace-nowrap transition ${activeArea === area.strArea ? 'bg-green-600 text-white' : 'bg-gray-200'}`}
-				on:click={() => selectArea(area.strArea)}
+				on:click={() => selectArea(area.strArea ?? '')}
 			>
 				{area.strArea}
 			</button>
@@ -115,13 +117,13 @@
 
 	{#if isLoading}
 		<div class="flex flex-row gap-5 overflow-x-auto p-2">
-			{#each Array(10) as _}
+			{#each Array.from({ length: 10}) as _}
 				<RecipeCardSkeleton />
 			{/each}
 		</div>
 	{:else}
 		<div class="flex flex-row gap-5 overflow-x-auto p-2">
-			{#each meals as meal}
+			{#each meals as meal (meal.idMeal)}
 				<div class="h-auto w-auto">
 					<RecipeCard {meal} on:click={() => pushYoutube(meal.strYoutube)} />
 				</div>
@@ -131,7 +133,7 @@
 
 	{#if isLoading}
 		<div class="flex flex-row gap-5 overflow-x-auto p-2">
-			{#each Array(6) as _}
+			{#each Array.from({ length: 6 }) as _}
 				<NewRecipesSkeleton />
 			{/each}
 		</div>
@@ -139,7 +141,7 @@
 		<div class="flex flex-col p-2">
 			<p class="text-2xl font-bold">New Recipes</p>
 			<div class="flex h-45 items-center justify-between gap-4 overflow-x-auto">
-				{#each newRecipes as recipe}
+				{#each newRecipes as recipe (recipe.idMeal)}
 	
 
 					<div class="relative flex w-60 shrink-0 flex-col rounded-lg bg-gray-200 p-2">

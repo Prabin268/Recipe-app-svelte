@@ -1,28 +1,35 @@
-<script>
+<script lang="ts">
 	import { ArrowLeft } from 'lucide-svelte';
 	import { savedMeals } from '$lib/stores/savedMeals';
 	import { onMount } from 'svelte';
 
-	let inputValue = '';
-	let savedItems = [];
-	let countLike = 0;
-	let countDislike = 0;
+	let inputValue: string = '';
 
-	let isClient = false;
+	interface CommentItem {
+		text: string;
+		date: string;
+	}
+
+	let savedItems: CommentItem[] = [];
+
+	let countLike: number = 0;
+	let countDislike: number = 0;
+
+	let isClient: boolean = false;
 
 	onMount(() => {
 		isClient = true;
 	});
 
-	function increment() {
+	function increment(): void {
 		countLike += 1;
 	}
 
-	function decrement() {
+	function decrement(): void {
 		countDislike += 1;
 	}
 
-	function saveInput() {
+	function saveInput(): void {
 		if (inputValue.trim() !== '') {
 			savedItems = [
 				...savedItems,

@@ -1,41 +1,3 @@
-// const BASE_URL = "https://www.themealdb.com/api/json/v1/1";
-
-// export async function searchMeals(query = '') {
-//   const res = await fetch(`${BASE_URL}/search.php?s=${query}`);
-//   const data = await res.json();
-//   return data.meals || [];
-// }
-
-// export async function getAreas() {
-// 	const res = await fetch(`${BASE_URL}/list.php?a=list`);
-// 	const data = await res.json();
-// 	return data.meals || [];
-// }
-
-// export async function getRandomMeals() {
-//   const res = await fetch(`${BASE_URL}/search.php?f=c`);
-//   const data = await res.json();
-//   return data.meals || [];
-// }
-
-// export async function getMealsByArea(area) {
-//   const res = await fetch(`${BASE_URL}/filter.php?a=${area}`);
-//   const data = await res.json();
-//   return data.meals || [];
-// }
-
-// export async function getMealsByCategory(category) {
-// 	const res = await fetch(`${BASE_URL}/filter.php?c=${category}`);
-// 	const data = await res.json();
-// 	return data.meals || [];
-// }
-
-// export async function getCategories() {
-// 	const res = await fetch(`${BASE_URL}/categories.php`);
-// 	const data = await res.json();
-// 	return data.categories || [];
-// }
-
 const BASE_URL = "https://www.themealdb.com/api/json/v1/1";
 
 export interface Meal {
@@ -46,7 +8,6 @@ export interface Meal {
   strInstructions?: string;
   strMealThumb?: string;
   strYoutube?: string;
-  [key: string]: any; 
 }
 
 export interface Category {
@@ -56,15 +17,19 @@ export interface Category {
   strCategoryDescription: string;
 }
 
+export interface Area {
+  strArea: string;
+}
+
 export async function searchMeals(query: string = ''): Promise<Meal[]> {
   const res = await fetch(`${BASE_URL}/search.php?s=${query}`);
   const data: { meals: Meal[] | null } = await res.json();
   return data.meals || [];
 }
 
-export async function getAreas(): Promise<Meal[]> {
+export async function getAreas(): Promise<Area[]> {
   const res = await fetch(`${BASE_URL}/list.php?a=list`);
-  const data: { meals: Meal[] | null } = await res.json();
+  const data: { meals: Area[] | null } = await res.json();
   return data.meals || [];
 }
 
@@ -75,13 +40,13 @@ export async function getRandomMeals(): Promise<Meal[]> {
 }
 
 export async function getMealsByArea(area: string): Promise<Meal[]> {
-  const res = await fetch(`${BASE_URL}/filter.php?a=${area}`);
+  const res = await fetch(`${BASE_URL}/filter.php?a=${encodeURIComponent(area)}`);
   const data: { meals: Meal[] | null } = await res.json();
   return data.meals || [];
 }
 
 export async function getMealsByCategory(category: string): Promise<Meal[]> {
-  const res = await fetch(`${BASE_URL}/filter.php?c=${category}`);
+  const res = await fetch(`${BASE_URL}/filter.php?c=${encodeURIComponent(category)}`);
   const data: { meals: Meal[] | null } = await res.json();
   return data.meals || [];
 }

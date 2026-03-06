@@ -1,48 +1,54 @@
-<script>
+<script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import * as Drawer from '$lib/components/ui/drawer';
   import { Settings2, Star, Search } from 'lucide-svelte';
 
-  export let query = '';
-  export let categories = [];
-  export let selectedCategory = 'All';
-  export let selectedTime = 'All';
-  export let selectedRate = null;
+  export let query: string = '';
+  export let categories: string[] = [];
+  export let selectedCategory: string = 'All';
+  export let selectedTime: string = 'All';
+  export let selectedRate: number | null = null;
 
-  export let enableNavigation = false;
-  export let onSearch = () => {};
-  export let onDebouncedSearch = () => {};
-  export let onApplyFilter = () => {};
+  export let enableNavigation: boolean = false;
+  export let onSearch: () => void = () => {};
+  export let onDebouncedSearch: () => void = () => {};
+  export let onApplyFilter: () => void = () => {};
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{
+    openSearch: void;
+    timeSelect: string;
+    rateSelect: number;
+    categorySelect: string;
+  }>();
 
-  let open = false;
-  let debounceTimer;
+  let open: boolean = false;
+  let debounceTimer: number;
 
   function handleInput() {
     clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => {
+    debounceTimer = window.setTimeout(() => {
       onDebouncedSearch();
     }, 400);
   }
 
-  function selectTime(time) {
+  function selectTime(time: string) {
     selectedTime = time;
     dispatch('timeSelect', time);
   }
 
-  function selectRate(rate) {
+  function selectRate(rate: number) {
     selectedRate = rate;
     dispatch('rateSelect', rate);
   }
 
-  function selectCategory(cat) {
+  function selectCategory(cat: string) {
     selectedCategory = cat;
     dispatch('categorySelect', cat);
   }
 
   function applyFilter() {
     onApplyFilter();   
+    open = false;
   }
 </script>
 
@@ -56,21 +62,21 @@
       class="w-full text-sm outline-none"
       bind:value={query}
       on:input={handleInput}
-      on:keydown={(e) => e.key === 'Enter' && onSearch()}
+      on:keydown={(e: KeyboardEvent) => e.key === 'Enter' && onSearch()}
       on:click={() => enableNavigation && dispatch('openSearch')}
     />
   </div>
 
- 
-  <Drawer.Root bind:open>
+  
+  <Drawer.Root bind:open class="" portalProps={{}}>
     <Drawer.Trigger>
       <div class="flex justify-center rounded-xl bg-emerald-600 p-3 w-13 h-12 md:w-15 text-white cursor-pointer">
         <Settings2 />
       </div>
     </Drawer.Trigger>
 
-    <Drawer.Content>
-      <Drawer.Header>
+    <Drawer.Content class="" portalProps={{}}>
+      <Drawer.Header class="">
         <Drawer.Title class="text-center text-lg font-semibold">
           Filter Search
         </Drawer.Title>
@@ -147,7 +153,7 @@
         </div>
       </Drawer.Header>
 
-      <Drawer.Footer>
+      <Drawer.Footer class="">
         <button
           type="button"
           on:click={applyFilter}

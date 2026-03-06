@@ -1,5 +1,7 @@
-<script>
-	let activeItem = 'All';
+<script lang="ts">
+	let activeItem: 'All' | 'Read' | 'Unread' = 'All';
+
+	const filterItems: Array<'All' | 'Read' | 'Unread'> = ['All', 'Read', 'Unread'];
 </script>
 
 <div class="flex min-h-screen w-full flex-col md:p-5">
@@ -9,7 +11,7 @@
 	</div>
 
 	<div class="flex h-12 w-full gap-3 p-2 justify-between md:p-1 md:gap-3 border-0 md:justify-between">
-		{#each ['All', 'Read', 'Unread'] as item}
+		{#each filterItems as item}
 			<button
 			    type="button"
 				class="flex w-full cursor-pointer items-center justify-center rounded-lg text-base font-semibold transition

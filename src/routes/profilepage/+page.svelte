@@ -1,17 +1,34 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { Ellipsis, Bookmark, Play } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 	import { getAllRecipes, deleteRecipe } from '$lib/db';
 
-	let recipes = [];
-	let activeTab = 'Recipe';
+	interface Ingredient {
+		name: string;
+		measure: string;
+	}
+
+	interface Recipe {
+		id: number;
+		name: string;
+		category: string;
+		area: string;
+		mediaType: string;
+		imageUrl: string;
+		videoUrl: string;
+		ingredients: Ingredient[];
+		procedure: string;
+	}
+
+	let recipes: Recipe[] = [];
+	let activeTab: 'Recipe' | 'Videos' | 'Tag' = 'Recipe';
 
 	onMount(async () => {
 		recipes = await getAllRecipes();
 	});
 
-	async function removeRecipe(id) {
+	async function removeRecipe(id: number) {
 		await deleteRecipe(id);
 		recipes = await getAllRecipes();
 	}
@@ -60,7 +77,7 @@
 				type="button"
 				class="flex-1 rounded-xl py-2 font-semibold transition
 					{activeTab === tab ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'}"
-				on:click={() => (activeTab = tab)}
+				on:click={() => (activeTab = tab as 'Recipe' | 'Videos' | 'Tag')}
 			>
 				{tab}
 			</button>
@@ -78,24 +95,24 @@
 						tabindex="0"
 						class="relative cursor-pointer overflow-hidden rounded-lg shadow-lg"
 						on:click={() => goto(`/localrecipe/${meal.id}`)}
-						on:keydown={(e) =>
+						on:keydown={(e: KeyboardEvent) =>
 							(e.key === 'Enter' || e.key === ' ') && goto(`/localrecipe/${meal.id}`)}
 					>
 						<img
 							src={meal.imageUrl}
 							alt={meal.name}
-							class="h-48 w-full rounded-lg object-cover md:h-56"
+							class="h-48 w-full rounded-lg object-cover md:h-45"
 						/>
-						<img src="/Rating4.0.png" alt="Rating 4.0" class="absolute top-2 right-2 w-6 md:w-8" />
-						<h2 class="absolute bottom-12 left-2 truncate text-lg font-bold text-white">
+						<img src="/Rating4.0.png" alt="Rating 4.0" class="absolute top-2 right-2 w-18 md:w-10 md:h-6" />
+						<h2 class="absolute bottom-8 left-2 truncate text-lg font-bold text-white md:font-bold">
 							{meal.name}
 						</h2>
 						<div class="absolute right-2 bottom-2 left-2 flex items-center justify-between">
-							<p class="font-semibold text-white">By Chef Jhon</p>
-							<img src="/Time.png" alt="Time icon" class="h-8 w-16 md:h-10 md:w-20" />
+							<p class="text-white md:text-sm">By Chef Jhon</p>
+							<img src="/Time.png" alt="Time icon" class="relative left-14 md:left-5 h-8 w-16 md:h-8 md:w-15" />
 							<button
 								type="button"
-								class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-green-600"
+								class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-green-600 md:h-6 md:w-6"
 								on:click|stopPropagation={() => removeRecipe(meal.id)}
 							>
 								<Bookmark size={18} fill="currentColor" />
@@ -118,7 +135,7 @@
 						tabindex="0"
 						class="relative cursor-pointer"
 						on:click={() => goto(`/localrecipe/${meal.id}`)}
-						on:keydown={(e) =>
+						on:keydown={(e: KeyboardEvent) =>
 							(e.key === 'Enter' || e.key === ' ') && goto(`/localrecipe/${meal.id}`)}
 					>
 						<video src={meal.videoUrl} class="h-48 w-full rounded-lg object-cover md:h-56" controls>
