@@ -1,9 +1,42 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { miniAppInit } from '../../miniapp';
+  import { page } from '$app/stores';
 
-  function navigateTohomepage(): void {
-    goto(`/homepage`);
-  }
+  let loading = false;
+
+  let name = '';
+  let email = '';
+  let password = '';
+  let confirm_password = '';
+  let error = '';
+
+  function signin() {
+		if (email === 'admin@test.com' && password === '123456') {
+			goto('/homepage');
+		} else {
+			error = 'Invalid email or password';
+		}
+	}
+
+  const handleGoogleLogin = async () => {
+		const miniapp = window.miniapp;
+		if (!miniapp) return;
+
+		try {
+			loading = true;
+
+			await miniapp.login('g');
+			await miniAppInit();
+			console.log('miniapp login successfull');
+			goto('/homepage');
+		} catch (err) {
+			console.log('miniapp login error', err);
+		} finally {
+			loading = false;
+		}
+	};
+
 </script>
 
 <div
@@ -22,13 +55,14 @@
       </p>
     </div>
 
-    <form action="?/signup" method="POST" class="space-y-4 md:mb-1 md:mt-0">
+    <form on:submit|preventDefault={signin} class="space-y-4 md:mb-1 md:mt-0">
       <div class="flex flex-col">
         <label class="flex flex-col gap-1 text-[20px] font-semibold text-gray-700 md:text-sm">
           Name
           <input
             name="name"
             type="text"
+            bind:value={name}
             placeholder="Enter your name"
             required
             class="h-12 rounded-lg border px-4 py-2 text-[15px] focus:border-transparent focus:ring-2 focus:outline-none md:h-10 md:text-sm"
@@ -42,6 +76,7 @@
           <input
             name="email"
             type="email"
+             bind:value={email}
             placeholder="Enter your email"
             required
             class="h-12 rounded-lg border px-4 py-2 text-[15px] focus:border-transparent focus:ring-2 focus:outline-none md:h-10 md:text-sm"
@@ -55,6 +90,7 @@
           <input
             name="password"
             type="password"
+            bind:value={password}
             placeholder="Enter your password"
             required
             class="h-12 rounded-lg border px-4 py-2 text-[15px] focus:border-transparent focus:ring-2 focus:outline-none md:h-10 md:text-sm"
@@ -68,6 +104,7 @@
           <input
             name="confirmPassword"
             type="password"
+            bind:value={confirm_password}
             placeholder="Retype password"
             required
             class="h-12 rounded-lg border px-4 py-2 text-[15px] focus:border-transparent focus:ring-2 focus:outline-none md:h-10 md:text-sm"
@@ -85,7 +122,6 @@
       <button
         type="submit"
         class="w-full rounded-lg bg-[rgba(18,149,117,1)] py-5 font-semibold text-white transition duration-300 md:h-10 md:flex md:justify-center md:items-center "
-        on:click={navigateTohomepage}
       >
         Sign Up →
       </button>
@@ -102,6 +138,8 @@
     <div class="flex w-full justify-center gap-5 md:mb-0">
       <button
         type="button"
+        on:click={handleGoogleLogin}
+        disabled={loading}
         class="flex size-15 items-center justify-center rounded-lg shadow-xl"
         aria-label="google-btn"
       >

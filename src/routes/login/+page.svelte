@@ -1,9 +1,52 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { loginUser } from '$lib/auth/auth';
+	import { setUser } from '$lib/stores/user';
+	import { miniAppInit } from '../../miniapp';
+	import { page } from '$app/stores';
 
-	function navigateTohomepage(): void {
-		goto(`/homepage`);
+	let loading = false;
+
+	let email = '';
+	let password = '';
+	let error = '';
+
+	async function login() {
+	try {
+		loading = true;
+
+		const user = await loginUser(email, password);
+        setUser(user);
+
+		document.cookie = `foodapp_access-token=${user.id}; Path=/; Secure; SameSite=Strict`;
+
+		console.log('Logged in user:', user);
+
+		goto('/homepage', { replaceState: true});
+	} catch (err) {
+		error = 'Invalid email or password';
+	} finally {
+		loading = false;
 	}
+}
+
+	const handleGoogleLogin = async () => {
+		const miniapp = window.miniapp;
+		if (!miniapp) return;
+
+		try {
+			loading = true;
+
+			await miniapp.login('g');
+			await miniAppInit();
+			console.log('miniapp login successfull');
+			goto('/homepage');
+		} catch (err) {
+			console.log('miniapp login error', err);
+		} finally {
+			loading = false;
+		}
+	};
 </script>
 
 <div
@@ -11,18 +54,19 @@
          md:flex md:min-h-screen md:items-center md:justify-center"
 >
 	<div class="mx-auto min-h-screen w-full max-w-md space-y-4 rounded-2xl p-8">
-		<div class="mb-15 mt-10 text-left md:mt-0">
+		<div class="mt-10 mb-15 text-left md:mt-0">
 			<h1 class="text-5xl font-bold">Hello,</h1>
 			<p class="text-3xl text-gray-600">Welcome Back!</p>
 		</div>
 
-		<form action="?/login" method="POST" class="space-y-4 md:space-y-0.5">
+		<form on:submit|preventDefault={login} class="space-y-4 md:space-y-0.5">
 			<div class="flex flex-col">
 				<label class="md:text-md flex flex-col gap-2 text-[20px] font-semibold text-gray-700">
 					Email
 					<input
 						name="email"
 						type="email"
+						bind:value={email}
 						placeholder="Enter your email"
 						required
 						class="h-15 rounded-lg border px-4 py-2 text-[15px] focus:border-transparent focus:ring-2 focus:outline-none md:h-12"
@@ -35,6 +79,7 @@
 					Password
 					<input
 						name="password"
+						bind:value={password}
 						type="password"
 						placeholder="Enter your password"
 						required
@@ -42,15 +87,14 @@
 					/>
 				</label>
 
-				<a href="./signup" class="text-[12px] md:mb-2" style="color: rgba(255, 156, 0, 1)">
-					Forgot Password?
-				</a>
+				{#if error}
+					<p class="text-sm text-red-500">{error}</p>
+				{/if}
 			</div>
 
 			<button
-				type="button"
+				type="submit"
 				class="w-full rounded-lg bg-[rgba(18,149,117,1)] py-5 font-semibold text-white transition duration-300"
-				on:click={navigateTohomepage}
 			>
 				Sign In →
 			</button>
@@ -62,9 +106,11 @@
 			<div class="h-0.5 flex-1 bg-slate-200"></div>
 		</div>
 
-		<div class="flex w-full justify-center gap-5 border border-white">
+		<div class="flex w-full justify-center gap-5 border-0">
 			<button
 				type="button"
+				on:click={handleGoogleLogin}
+				disabled={loading}
 				class="flex size-15 items-center justify-center rounded-lg shadow-xl"
 				aria-label="google-btn"
 			>

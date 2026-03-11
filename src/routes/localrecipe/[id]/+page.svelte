@@ -2,8 +2,9 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { ArrowLeft, Ellipsis, Bookmark, Star } from 'lucide-svelte';
-	import { getRecipeById, deleteRecipe } from '$lib/db';
+	import { ArrowLeft, Ellipsis, Bookmark, Star, Timer } from 'lucide-svelte';
+	import { getRecipeById, deleteRecipe } from '$lib/db/db';
+	import { fly } from 'svelte/transition';
 
 	interface Ingredient {
 		name: string;
@@ -19,6 +20,7 @@
 		procedure?: string;
 	}
 
+	let isfollowing: boolean = false;
 	let recipe: Recipe | null = null;
 	let loading = true;
 
@@ -96,6 +98,10 @@
 	function navigateToreviewpage(): void {
 		goto(`/reviewpage`);
 	}
+
+	function toggleFollow () {
+		isfollowing = !isfollowing;
+	}
 </script>
 
 {#if loading}
@@ -115,24 +121,39 @@
 	<div class="relative w-full">
 		{#if recipe.imageUrl && recipe.videoUrl}
 			{#if activeTab === 'ingredient'}
-				<img
-					src={recipe.imageUrl}
-					alt={recipe.name}
-					class="h-60 w-full rounded-xl object-cover p-2"
-				/>
 
+			<div class="w-full p-2">
+
+				<div
+						class="relative w-full h-50 rounded-2xl inset-0 bg-cover bg-center md:h-80 md:mr-3"
+						style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.9)),url({recipe.imageUrl})"
+					>
+				<div class="flex justify-center items-center gap-2 absolute top-2 right-2 rounded-xl md:w-20 md:h-8 w-15  bg-orange-200">
+					<Star fill="orange" color="orange" size="15"/><h1>
+						4.0
+					</h1>
+				</div>
+				
 				<div class="absolute right-3 bottom-3 flex gap-3">
-					<img src="/Time.png" alt="time" class="h-10 w-20" />
+					
+					<div class="flex justify-center gap-1 items-center text-white h-10 w-22">
+						<Timer /> <h1>20 mins</h1>
+					</div>
+					
 					<button
 						type="button"
 						class="flex h-9 w-9 items-center justify-center rounded-full bg-white text-green-600"
 						on:click={unsaveRecipe}
 					>
-						<Bookmark size={20} fill="currentColor" />
+						<Bookmark size={20} />
 					</button>
-				</div>
+				</div>	
+			</div>
+		</div>
+
+					
 			{:else}
-				<video src={recipe.videoUrl} controls class="h-60 w-full rounded-xl p-2">
+				<video src={recipe.videoUrl} controls class="h-60 w-full rounded-xl p-2 md:h-80">
 					<track kind="captions" label="English captions" src="" default />
 				</video>
 			{/if}
@@ -153,6 +174,17 @@
 		<h1 class="text-2xl font-bold">{recipe.name}</h1>
 		<p class="text-gray-400">(0 Reviews)</p>
 	</div>
+
+	<div class="mt-3 flex items-center justify-between px-3">
+				<div class="flex items-center gap-3">
+					<img src="/profile2.png" alt="pic" class="h-10 w-10 rounded-full sm:h-15 sm:w-15" />
+					<div class="flex flex-col justify-center">
+						<h2 class="text-sm font-medium sm:text-base">Laura Wilson</h2>
+						<img src="/Location.png" alt="location" class="h-3 sm:h-4" />
+					</div>
+				</div>
+				<button on:click={toggleFollow} class="bg-emerald-600 rounded-lg text-white text-sm w-15 h-8 md:h-8 md:w-15 sm:h-4 transition-colors duration-200 {isfollowing ? 'bg-emerald-500 hover:bg-emrald-600' : 'bg-green-600 hover:bg-green-700'}">{isfollowing ? 'Unfollow' : 'Follow'}</button>
+			</div>
 
 	<div class="mt-3 flex gap-2 px-3">
 		<button
@@ -176,7 +208,9 @@
 	</div>
 
 	{#if activeTab === 'ingredient'}
-		<div class="mx-4 mt-4 space-y-3">
+		<div
+		in:fly={{ x: -200, duration: 350 }}
+		out:fly={{ x: -200, duration: 350 }} class="mx-4 mt-4 space-y-3">
 			{#each localIngredients as item}
 				<div class="flex justify-between rounded-xl bg-gray-100 p-4">
 					<h1>{item.name}</h1>
@@ -187,7 +221,10 @@
 	{/if}
 
 	{#if activeTab === 'procedure'}
-		<div class="mx-4 mt-4 space-y-3">
+		<div
+		in:fly={{ x: 200, duration: 350 }}
+		out:fly={{ x: 200, duration: 350 }}
+		 class="mx-4 mt-4 space-y-3">
 			{#each localSteps as step, index}
 				<div class="rounded-xl bg-gray-100 p-4">
 					<strong>Step {index + 1}</strong>
@@ -200,7 +237,7 @@
 	{#if showPopup}
 		<button
 			type="button"
-			class="absolute inset-0 bg-black/40"
+			class="fixed inset-0 bg-black/40"
 			aria-label="Close popup"
 			on:click={closePopup}
 		></button>
@@ -219,7 +256,7 @@
 			</button>
 			<button type="button" class="flex items-center gap-2 p-2" on:click={unsaveRecipe}>
 				<img src="/icon1.png" alt="unsave-icon" class="h-4 w-4" />
-				Unsave
+				Remove
 			</button>
 		</div>
 	{/if}

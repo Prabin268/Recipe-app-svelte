@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Bookmark } from 'lucide-svelte';
+	import { Bookmark, ArrowLeft, Timer, Star } from 'lucide-svelte';
 	import { savedMeals } from '$lib/stores/savedMeals';
 	import { goto } from '$app/navigation';
 	import SavedSkeleton from '$lib/components/SavedSkeleton.svelte';
@@ -21,10 +21,23 @@
 		e.stopPropagation();
 		savedMeals.remove(mealId);
 	}
+
+	function goBack(): void {
+    goto('/homepage');
+  }
 </script>
 
 <div class="w-full p-4 md:p-10">
-	<h1 class="mb-4 text-center text-2xl font-semibold">Saved Recipes</h1>
+
+	<div class="flex justify-between items-center mb-2 md:justify-center md:items-center md:mb-5">
+
+		<button class="flex text-left md:hidden" on:click={goBack}>
+			<ArrowLeft />
+		</button>
+		
+		<h1 class="flex-1 text-center text-2xl font-semibold">Saved Recipes</h1>
+
+	</div>
 
 	{#if isLoading}
 		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -46,12 +59,14 @@
 				>
 					<div
 						class="absolute inset-0 bg-cover bg-center"
-						style="background-image: url({meal.image})"
+						style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,1)),url({meal.image})"
 					></div>
 
-					<div class="absolute inset-0 bg-linear-to-t from-black/70 to-transparent"></div>
-
-					<img src="/Rating4.0.png" alt="Recipe rating" class="absolute top-2 right-2 z-10 h-6" />
+					<div class="flex justify-center items-center gap-1 relative top-5 left-72 md:left-63 rounded-xl w-15  bg-orange-200">
+							<Star fill="orange" color="orange" size="15"/><h1>
+                                 4.0
+							</h1>
+						 </div>
 
 					<div class="absolute right-3 bottom-10 left-3 z-10 text-white">
 						<h2 class="truncate text-lg font-bold">
@@ -62,13 +77,20 @@
 					<div class="absolute right-3 bottom-3 left-3 z-10 flex items-center justify-between">
 						<p class="text-sm font-semibold text-white">By Chef John</p>
 
-						<button
+						<div class="flex gap-2">
+							<div class="flex justify-center items-center text-white h-10 w-20">
+						<Timer /> <h1>20 mins</h1>
+					 </div>
+							
+							
+							<button
 							type="button"
-							class="rounded-full bg-white p-1 text-green-600"
+							class="flex justify-center items-center rounded-full h-8 w-8 bg-white p-1 text-green-600"
 							on:click={(e: MouseEvent) => removeMeal(meal.id, e)}
 						>
-							<Bookmark size="18" fill="currentColor" />
+							<Bookmark size="18" />
 						</button>
+					</div>
 					</div>
 				</div>
 			{/each}

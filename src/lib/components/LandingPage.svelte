@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 	
-  function navigateTologin(): void {
+  function navigateToLogin(): void {
     goto(`/login`);
   }
 </script>
@@ -27,7 +27,7 @@
     </div>
 
     <button
-      on:click={navigateTologin}
+      on:click={navigateToLogin}
       class="bg-[rgba(18,149,117,1)] text-white px-20 py-3 rounded-xl">
       Start Cooking →
     </button>

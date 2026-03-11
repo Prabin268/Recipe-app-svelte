@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-  import { addRecipe } from '$lib/db';
+  import { addRecipe } from '$lib/db/db';
   import { getCategories, getAreas } from '$lib/api/meals';
 
   interface Category {
@@ -62,17 +62,6 @@
     showAreaDropdown = false;
   }
 
-function handleIngredientInput(value: string, index: number) {
-    
-    const regex = /^([\d\s\/.,]+)?\s*(.*)$/;
-    const match = value.match(regex);
-    if (match) {
-      form.ingredients[index] = {
-        measure: match[1]?.trim() || '',
-        name: match[2]?.trim() || ''
-      };
-    }
-  }
 
   function handleImageUpload(e: Event) {
     const target = e.target as HTMLInputElement;
@@ -105,7 +94,8 @@ function handleIngredientInput(value: string, index: number) {
   }
 </script>
 
-<form on:submit|preventDefault={handleSubmit} class="flex flex-col w-full max-w-3xl mx-auto space-y-4 p-4 mt-6">
+<form on:submit|preventDefault={handleSubmit} class="flex flex-col w-full mx-auto space-y-4
+  px-4 md:px-20 lg:px-20 py-6 mt-6">
   <h1 class="font-bold text-2xl text-center mb-4">Customize Your Recipe</h1>
 
   <label class="flex flex-col">
@@ -187,18 +177,34 @@ function handleIngredientInput(value: string, index: number) {
   {/if}
 </label>
 
-  <label class="flex flex-col">
-    <span class="mb-1 font-medium">Ingredients (auto-split measurement)</span>
+  <!-- <label class="flex flex-col">
+    <span class="mb-1 font-medium">Ingredients</span>
     {#each form.ingredients as ingredient, i}
       <input
         type="text"
-        placeholder="500g chicken"
+        placeholder="Enter required ingredients"
         bind:value={ingredient.name}
         on:input={(e) => handleIngredientInput((e.target as HTMLInputElement).value, i)}
         class="mb-2 border-2 rounded-md px-3 py-2"
       />
     {/each}
-  </label>
+  </label> -->
+ <label class="flex flex-col">
+  <span class="mb-1 font-medium">Ingredients</span>
+
+  {#each form.ingredients as ingredient, i}
+    <input
+      type="text"
+      placeholder="Enter ingredients"
+      value={ingredient.name}
+      on:input={(e) => {
+        const target = e.target as HTMLInputElement;
+        form.ingredients[i].name = target.value;
+      }}
+      class="mb-2 border-2 rounded-md px-3 py-2"
+    />
+  {/each}
+</label>
 
   <label class="flex flex-col">
     <span class="mb-1 font-medium">Procedure</span>

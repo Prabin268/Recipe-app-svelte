@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { ArrowLeft, Ellipsis, Bookmark, Star } from 'lucide-svelte';
+	import { ArrowLeft, Ellipsis, Bookmark, Star, Timer } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 	import { savedMeals } from '$lib/stores/savedMeals';
     import type { Meal } from '$lib/api/meals';
+	import { fly } from 'svelte/transition';
 
 	interface IngredientItem {
 		image: string;
@@ -12,6 +13,7 @@
 		measure: string;
 	}
 
+	let isfollowing: boolean = false;
 	let meal: Meal | null = null;
 	let loading: boolean = true;
 	let activeTab: 'ingredient' | 'procedure' = 'ingredient';
@@ -99,9 +101,13 @@
 		savedMeals.remove(meal.idMeal);
 		showPopup = false;
 	}
+
+	function toggleFollow() {
+       isfollowing = !isfollowing;
+	}
 </script>
 
-<div class="min-h-screen w-full bg-gray-50 p-2 sm:p-5">
+<div class="relative min-h-dvh w-full bg-gray-50 p-2 sm:p-5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] lg:[&::-webkit-scrollbar]:block lg:[-ms-overflow-style:auto] lg:[scrollbar-width:auto]">
 	{#if loading}
 		<div class="flex h-screen items-center justify-center">
 			<p class="text-lg text-gray-500">Loading recipe...</p>
@@ -121,26 +127,30 @@
 
 			<div class="relative w-full">
 				{#if activeTab === 'ingredient'}
-					<img
-						src={meal.strMealThumb}
-						alt={meal.strMeal}
-						class="h-60 w-full rounded-3xl object-cover sm:h-80"
-					/>
-					<img
-						src="/Rating4.0.png"
-						alt="rating"
-						class="absolute top-4 right-4 h-6 w-16 sm:h-8 sm:w-20"
-					/>
+					<div
+						class="h-50 w-full rounded-3xl inset-0 bg-cover bg-center md:h-80"
+						style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.9)),url({meal.strMealThumb})"
+					>
+				<div class="flex justify-center items-center absolute right-3 top-4 rounded-xl w-15 bg-orange-200 gap-1 md:w-15 h-8">
+							<Star fill="orange" color="orange" size="15"/><h1>
+                                 4.0
+							</h1>
+						 </div>
 					<div class="absolute right-4 bottom-4 flex items-center gap-4">
-						<img src="/Time.png" alt="time" class="h-6 w-12 sm:h-10 sm:w-20" />
+						<div class="flex justify-center gap-1 md:gap-1 items-center text-white h-10 w-22">
+						<Timer /> <h1>20 mins</h1>
+					 </div>
 						<button
 							type="button"
 							aria-label="remove-meal"
-							class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-green-600 sm:h-9 sm:w-9"
+							on:click={unsaveMeal}
+							class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-green-600 sm:h-8 sm:w-8"
 						>
-							<Bookmark size={18} class="sm:size-20" fill="currentColor" />
+							<Bookmark size={20} class="md:size-5" />
 						</button>
-					</div>
+					</div>	
+				</div>
+					
 				{:else}
 					<iframe
 						src={`https://www.youtube.com/embed/${meal.strYoutube.split('=')[1]}`}
@@ -153,7 +163,7 @@
 
 			<div class="mt-4 flex justify-between px-3">
 				<h1 class="text-xl font-bold sm:text-2xl">{meal.strMeal}</h1>
-				<p class="text-sm text-gray-400 sm:text-base">(0k Reviews)</p>
+				<p class="text-sm text-gray-400 sm:text-base">(0 Reviews)</p>
 			</div>
 
 			<div class="mt-3 flex items-center justify-between px-3">
@@ -164,7 +174,8 @@
 						<img src="/Location.png" alt="location" class="h-3 sm:h-4" />
 					</div>
 				</div>
-				<img src="/button2.png" alt="follow" class="h-8 sm:h-10" />
+				
+				 <button on:click={toggleFollow} class="bg-emerald-600 rounded-lg text-white text-sm w-15 h-8 md:h-8 md:w-15 sm:h-4 transition-colors duration-200 {isfollowing ? 'bg-emerald-500 hover:bg-emrald-600' : 'bg-green-600 hover:bg-green-700'}">{isfollowing ? 'Unfollow' : 'Follow'}</button>
 			</div>
 		</div>
 
@@ -188,42 +199,50 @@
 			</button>
 		</div>
 
-		{#if activeTab === 'ingredient'}
-			<div class="mx-3 mt-4 max-h-100 space-y-3 overflow-auto sm:max-h-125">
-				{#each ingredients as item}
-					<div class="flex justify-between rounded-xl bg-gray-100 p-4">
-						<div class="flex h-10 w-10 items-center rounded-lg bg-white">
-							<img src={item.image} alt={item.name} class="h-8 w-8" />
-						</div>
-						<div class="flex w-full justify-between">
-							<h1>{item.name}</h1>
-							<p class="text-gray-500">{item.measure}</p>
-						</div>
-					</div>
-				{/each}
-			</div>
-		{/if}
+		<div class="relative overflow-hidden">
 
-		{#if activeTab === 'procedure'}
-			<div class="mx-3 mt-4 max-h-100 space-y-4 overflow-auto sm:max-h-125">
-				{#each steps as step, index}
-					<div class="w-full rounded-xl bg-gray-100 p-4">
-						<strong>Step {index + 1}:</strong>
-						<p class="mt-1">{step}</p>
+			
+			{#if activeTab === 'ingredient'}
+			<div
+			in:fly={{ x: -200, duration: 350 }}
+		out:fly={{ x: -200, duration: 350 }} class="mx-3 mt-4 max-h-100 space-y-3 overflow-auto sm:max-h-125 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] lg:[&::-webkit-scrollbar]:block lg:[-ms-overflow-style:auto] lg:[scrollbar-width:auto]">
+				{#each ingredients as item}
+				<div class="flex justify-between rounded-xl bg-gray-100 p-4">
+					<div class="flex h-10 w-10 items-center rounded-lg bg-white">
+						<img src={item.image} alt={item.name} class="h-8 w-8" />
 					</div>
+					<div class="flex w-full justify-between">
+						<h1>{item.name}</h1>
+						<p class="text-gray-500">{item.measure}</p>
+					</div>
+				</div>
 				{/each}
 			</div>
-		{/if}
+			{/if}
+			
+			{#if activeTab === 'procedure'}
+			<div
+			in:fly={{ x: 200, duration: 350 }}
+		out:fly={{ x: 200, duration: 350 }} class="mx-3 mt-4 max-h-100 space-y-4 overflow-auto sm:max-h-125 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] lg:[&::-webkit-scrollbar]:block lg:[-ms-overflow-style:auto] lg:[scrollbar-width:auto]">
+				{#each steps as step, index}
+				<div class="w-full rounded-xl bg-gray-100 p-4">
+					<strong>Step {index + 1}:</strong>
+					<p class="mt-1">{step}</p>
+				</div>
+				{/each}
+			</div>
+			{/if}
+		</div>
 	{/if}
 
 	{#if showPopup}
 		<button
 			type="button"
-			class="absolute inset-0 bg-black/40"
+			class="absolute inset-0 bg-black/40 z-40"
 			aria-label="Close popup"
 			on:click={closePopup}
 		></button>
-		<div class="absolute top-16 right-4 rounded-lg bg-white p-4 shadow-lg">
+		<div class="absolute top-16 right-4 z-50 rounded-lg bg-white p-4 shadow-lg">
 			<button class="flex items-center gap-2 p-2" on:click={openShare}>
 				<img src="/icon4.png" alt="share-icon" class="h-4 w-4" /> share
 			</button>

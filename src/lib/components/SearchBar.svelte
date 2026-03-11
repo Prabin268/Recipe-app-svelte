@@ -59,7 +59,7 @@
     <input
       type="text"
       placeholder="Search recipe"
-      class="w-full text-sm outline-none"
+      class="w-full text-base outline-none"
       bind:value={query}
       on:input={handleInput}
       on:keydown={(e: KeyboardEvent) => e.key === 'Enter' && onSearch()}
@@ -68,7 +68,7 @@
   </div>
 
   
-  <Drawer.Root bind:open class="" portalProps={{}}>
+  <Drawer.Root bind:open={open} class="" portalProps={{}}>
     <Drawer.Trigger>
       <div class="flex justify-center rounded-xl bg-emerald-600 p-3 w-13 h-12 md:w-15 text-white cursor-pointer">
         <Settings2 />

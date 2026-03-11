@@ -8,7 +8,7 @@
   }
 </script>
 
-<footer class="fixed bottom-0 left-0 w-full border-t-2 bg-white py-5 z-50 md:hidden">
+<footer class="fixed bottom-0 left-0 w-full border-t-2 bg-white py-5 z-50 md:hidden border-0">
   
   <nav class="mx-auto flex justify-center gap-x-14">
 

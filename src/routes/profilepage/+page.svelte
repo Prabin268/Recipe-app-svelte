@@ -1,8 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Ellipsis, Bookmark, Play } from 'lucide-svelte';
+	import { afterNavigate } from '$app/navigation';
+	import { Ellipsis, Bookmark, Play, ArrowLeft, Timer, Star } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
-	import { getAllRecipes, deleteRecipe } from '$lib/db';
+	import { getAllRecipes, deleteRecipe } from '$lib/db/db';
+	import ProfileSkeleton from '$lib/components/ProfileSkeleton.svelte';
+	import { user, clearUser } from '$lib/stores/user';
+
+	let isLoading = true;
+
+	let showPopup: boolean = false;
 
 	interface Ingredient {
 		name: string;
@@ -24,21 +31,71 @@
 	let recipes: Recipe[] = [];
 	let activeTab: 'Recipe' | 'Videos' | 'Tag' = 'Recipe';
 
-	onMount(async () => {
+	async function loadRecipes() {
+		isLoading = true;
+		await new Promise((resolve) => setTimeout(resolve, 300));
 		recipes = await getAllRecipes();
+		isLoading = false;
+	}
+
+	onMount(loadRecipes);
+
+	afterNavigate((nav) => {
+		if (nav.to?.url.pathname === '/profilepage') {
+			loadRecipes();
+		}
 	});
+
+	const handleLogout = async () => {
+
+	const miniapp = window.miniapp;
+	if (!miniapp) return;
+
+	try {
+		await miniapp.logout();
+
+		document.cookie = 'foodapp_access-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; SameSite=Strict';
+
+		clearUser();
+
+		showPopup = false;
+
+		goto('/login', { replaceState: true });
+
+		console.log("Logout successful");
+
+	} catch (err) {
+		console.log("Logout error", err);
+	}
+};
+
+	function openPopup(): void {
+		showPopup = true;
+	}
+
+	function closePopup(): void {
+		showPopup = false;
+	}
 
 	async function removeRecipe(id: number) {
 		await deleteRecipe(id);
 		recipes = await getAllRecipes();
 	}
+
+	function goBack(): void {
+		goto('/homepage');
+	}
 </script>
 
 <div class="flex w-full flex-col space-y-4 p-4 md:p-10">
-	
 	<div class="flex items-center justify-between">
+		<button class="md:hidden" on:click={goBack}>
+			<ArrowLeft />
+		</button>
 		<h1 class="flex-1 text-center text-2xl font-bold">Profile</h1>
-		<Ellipsis size="24" />
+		<button on:click={openPopup}>
+			<Ellipsis size="24" />
+		</button>
 	</div>
 
 	<div class="flex w-full items-center gap-6 md:flex-row md:gap-10">
@@ -75,7 +132,7 @@
 		{#each ['Recipe', 'Videos', 'Tag'] as tab}
 			<button
 				type="button"
-				class="flex-1 rounded-xl py-2 font-semibold transition
+				class="flex-1 cursor-pointer rounded-xl py-2 font-semibold transition
 					{activeTab === tab ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'}"
 				on:click={() => (activeTab = tab as 'Recipe' | 'Videos' | 'Tag')}
 			>
@@ -85,7 +142,13 @@
 	</div>
 
 	{#if activeTab === 'Recipe'}
-		{#if recipes.length === 0}
+		{#if isLoading}
+			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+				{#each Array(2) as _}
+					<ProfileSkeleton />
+				{/each}
+			</div>
+		{:else if recipes.length === 0}
 			<p class="mt-4 text-center text-gray-500">No recipes yet.</p>
 		{:else}
 			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
@@ -93,30 +156,41 @@
 					<div
 						role="button"
 						tabindex="0"
-						class="relative cursor-pointer overflow-hidden rounded-lg shadow-lg"
+						class="relative h-40 w-full cursor-pointer overflow-hidden rounded-lg shadow-lg md:h-48"
 						on:click={() => goto(`/localrecipe/${meal.id}`)}
 						on:keydown={(e: KeyboardEvent) =>
 							(e.key === 'Enter' || e.key === ' ') && goto(`/localrecipe/${meal.id}`)}
 					>
-						<img
-							src={meal.imageUrl}
-							alt={meal.name}
-							class="h-48 w-full rounded-lg object-cover md:h-45"
-						/>
-						<img src="/Rating4.0.png" alt="Rating 4.0" class="absolute top-2 right-2 w-18 md:w-10 md:h-6" />
+						<div
+							class="absolute inset-0 bg-cover bg-center"
+							style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,1)),url({meal.imageUrl})"
+						></div>
+						<div
+							class="absolute top-2 right-2 flex w-15 items-center justify-center gap-2 rounded-lg bg-orange-200"
+						>
+							<Star fill="orange" color="orange" size="15" />
+							<h1>4.0</h1>
+						</div>
 						<h2 class="absolute bottom-8 left-2 truncate text-lg font-bold text-white md:font-bold">
 							{meal.name}
 						</h2>
 						<div class="absolute right-2 bottom-2 left-2 flex items-center justify-between">
 							<p class="text-white md:text-sm">By Chef Jhon</p>
-							<img src="/Time.png" alt="Time icon" class="relative left-14 md:left-5 h-8 w-16 md:h-8 md:w-15" />
-							<button
-								type="button"
-								class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-green-600 md:h-6 md:w-6"
-								on:click|stopPropagation={() => removeRecipe(meal.id)}
-							>
-								<Bookmark size={18} fill="currentColor" />
-							</button>
+							<div class="flex items-center justify-center gap-2">
+								<div
+									class="flex h-10 w-22 items-center justify-center gap-1 text-white md:w-25 md:gap-1"
+								>
+									<Timer />
+									<h1>20 mins</h1>
+								</div>
+								<button
+									type="button"
+									class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-green-600 md:h-6 md:w-6"
+									on:click|stopPropagation={() => removeRecipe(meal.id)}
+								>
+									<Bookmark size={18} />
+								</button>
+							</div>
 						</div>
 					</div>
 				{/each}
@@ -138,9 +212,21 @@
 						on:keydown={(e: KeyboardEvent) =>
 							(e.key === 'Enter' || e.key === ' ') && goto(`/localrecipe/${meal.id}`)}
 					>
-						<video src={meal.videoUrl} class="h-48 w-full rounded-lg object-cover md:h-56" controls>
-							<track kind="captions" src="/captions/en.vtt" srclang="en" label="English" default />
+						<video src={meal.videoUrl} class="h-48 w-full rounded-lg object-cover md:h-56">
+							<track
+								kind="captions"
+								src="/captions/empty.vtt"
+								srclang="en"
+								label="English"
+								default
+							/>
 						</video>
+						<h2
+							class="absolute bottom-10 left-5 truncate text-lg font-bold text-black md:font-bold"
+						>
+							{meal.name}
+						</h2>
+						<p class="absolute bottom-6 left-5 font-semibold text-black md:text-sm">By Chef Jhon</p>
 						<button
 							class="absolute inset-0 m-auto flex h-12 w-12 items-center justify-center rounded-full border-4 border-gray-900"
 						>
@@ -154,5 +240,24 @@
 
 	{#if activeTab === 'Tag'}
 		<p class="mt-4 text-center text-gray-500">No tags available.</p>
+	{/if}
+
+	{#if showPopup}
+		<button
+			type="button"
+			class="absolute inset-0 z-10 bg-black/40"
+			aria-label="Close popup"
+			on:click={closePopup}
+		>
+		</button>
+		<div class="absolute top-16 right-4 z-50 rounded-lg bg-white p-4 shadow-lg">
+        <button class="flex items-center gap-2 p-2">
+			Settings
+		</button>
+			
+		<button on:click={handleLogout} class="flex items-center gap-2 p-2">
+			Logout
+		</button>
+		</div>
 	{/if}
 </div>
