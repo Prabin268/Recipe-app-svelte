@@ -27,7 +27,7 @@
   }
 </script>
 
-<div class="w-full p-4 md:p-10">
+<div class="w-full min-h-screen p-4 md:p-10">
 
 	<div class="flex justify-between items-center mb-2 md:justify-center md:items-center md:mb-5">
 
@@ -62,7 +62,7 @@
 						style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,1)),url({meal.image})"
 					></div>
 
-					<div class="flex justify-center items-center gap-1 relative top-5 left-72 md:left-63 rounded-xl w-15  bg-orange-200">
+					<div class="flex justify-center items-center gap-1 absolute top-2 right-2 rounded-xl w-15  bg-orange-200">
 							<Star fill="orange" color="orange" size="15"/><h1>
                                  4.0
 							</h1>

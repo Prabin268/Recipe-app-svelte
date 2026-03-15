@@ -1,4 +1,5 @@
 
+import { userStore } from '$lib/stores/user';
 import { jwtDecode } from 'jwt-decode';
 
 declare global {
@@ -48,10 +49,14 @@ export function miniAppInit(retryTimes = 3): Promise<any> {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const userDetail = await hamromini_sdkjs?.initialize(CLIENT_ID, window.miniapp);
+			console.log("user detail", userDetail)
 			if (userDetail?.user_profile) {
 				userDetail.isLoggedIn = true;
 				localStorage.setItem('foodapp_user', JSON.stringify(userDetail.user_profile));
 			}
+
+			userStore.set(userDetail?.user_profile)
+
 			let expireTime: number;
 			let currentTime: number = Date.now();
 

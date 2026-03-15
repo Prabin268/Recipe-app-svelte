@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { afterNavigate } from '$app/navigation';
-	import { Ellipsis, Bookmark, Play, ArrowLeft, Timer, Star } from 'lucide-svelte';
+	import { afterNavigate, pushState } from '$app/navigation';
+	import { Ellipsis, Bookmark, Play, ArrowLeft, Timer, Star, LogOut } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 	import { getAllRecipes, deleteRecipe } from '$lib/db/db';
 	import ProfileSkeleton from '$lib/components/ProfileSkeleton.svelte';
-	import { user, clearUser } from '$lib/stores/user';
+	import { userStore } from '$lib/stores/user';
+	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 
 	let isLoading = true;
 
@@ -47,27 +48,23 @@
 	});
 
 	const handleLogout = async () => {
+		const miniapp = window.miniapp;
+		if (!miniapp) return;
 
-	const miniapp = window.miniapp;
-	if (!miniapp) return;
+		try {
+			await miniapp.logout();
 
-	try {
-		await miniapp.logout();
+			userStore.set(null);
 
-		document.cookie = 'foodapp_access-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; SameSite=Strict';
+			showPopup = false;
 
-		clearUser();
+			goto('/', { replaceState: true });
 
-		showPopup = false;
-
-		goto('/login', { replaceState: true });
-
-		console.log("Logout successful");
-
-	} catch (err) {
-		console.log("Logout error", err);
-	}
-};
+			console.log('Logout successful');
+		} catch (err) {
+			console.log('Logout error', err);
+		}
+	};
 
 	function openPopup(): void {
 		showPopup = true;
@@ -85,25 +82,39 @@
 	function goBack(): void {
 		goto('/homepage');
 	}
+
+	onMount(() => {
+		const user = $userStore;
+		if (!user) goto('/');
+	});
 </script>
 
-<div class="flex w-full flex-col space-y-4 p-4 md:p-10">
+<div class="flex min-h-screen w-full flex-col space-y-4 p-4 md:p-10">
 	<div class="flex items-center justify-between">
 		<button class="md:hidden" on:click={goBack}>
 			<ArrowLeft />
 		</button>
 		<h1 class="flex-1 text-center text-2xl font-bold">Profile</h1>
-		<button on:click={openPopup}>
+		<button on:click={openPopup} class="md:hidden">
 			<Ellipsis size="24" />
 		</button>
 	</div>
 
 	<div class="flex w-full items-center gap-6 md:flex-row md:gap-10">
-		<img
+	{#if $userStore}
+	<img
+			src={$userStore?.photo_url}
+			alt="Profile"
+			class="h-20 w-20 rounded-full object-cover md:h-40 md:w-40"
+		/>
+	{:else}
+	<img
 			src="/profile-pic.png"
 			alt="Profile"
 			class="h-20 w-20 rounded-full object-cover md:h-40 md:w-40"
 		/>
+	{/if}
+		
 		<div class="flex gap-6 md:gap-10">
 			<div class="flex flex-col items-center">
 				<p class="text-gray-400">Recipes</p>
@@ -121,7 +132,12 @@
 	</div>
 
 	<div class="space-y-1 text-left md:text-left">
-		<h1 class="text-lg font-bold">ALfuwape Abiodun</h1>
+	{#if $userStore}
+	<h1 class="text-lg font-bold">{$userStore?.display_name}</h1>
+	{:else}
+<h1 class="text-lg font-bold">ALfuwape Abiodun</h1>
+	{/if}
+		
 		<p class="text-sm text-gray-400">Chef</p>
 		<p class="text-gray-500">Private Chef</p>
 		<p class="text-gray-500">Passionate about food and life</p>
@@ -166,16 +182,18 @@
 							style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,1)),url({meal.imageUrl})"
 						></div>
 						<div
-							class="absolute top-2 right-2 flex w-15 items-center justify-center gap-2 rounded-lg bg-orange-200"
+							class="flex justify-center items-center gap-1 absolute top-2 right-2 rounded-xl w-15  bg-orange-200"
 						>
 							<Star fill="orange" color="orange" size="15" />
 							<h1>4.0</h1>
 						</div>
-						<h2 class="absolute bottom-8 left-2 truncate text-lg font-bold text-white md:font-bold">
+						<div class="absolute right-3 bottom-10 left-3 z-10 text-white">
+						<h2 class="truncate text-lg font-bold">
 							{meal.name}
 						</h2>
-						<div class="absolute right-2 bottom-2 left-2 flex items-center justify-between">
-							<p class="text-white md:text-sm">By Chef Jhon</p>
+					</div>
+						<div class="absolute right-3 bottom-3 left-3 z-10 flex items-center justify-between">
+							<p class="text-white font-semibold text-sm">By Chef Jhon</p>
 							<div class="flex items-center justify-center gap-2">
 								<div
 									class="flex h-10 w-22 items-center justify-center gap-1 text-white md:w-25 md:gap-1"
@@ -250,14 +268,52 @@
 			on:click={closePopup}
 		>
 		</button>
-		<div class="absolute top-16 right-4 z-50 rounded-lg bg-white p-4 shadow-lg">
-        <button class="flex items-center gap-2 p-2">
-			Settings
-		</button>
+		<div class="absolute top-12 right-4 z-50 rounded-lg bg-white p-2 shadow-lg">
+			<div class="flex w-full items-center gap-2 p-2 text-left hover:bg-gray-100">
+				{#if userStore}
+					<div class="flex gap-1">
+						<img src={$userStore?.photo_url} alt="pic" class="h-10 w-10 rounded-full" />
+
+						<div class="flex flex-col justify-center">
+							<p class="text-[10px]">{$userStore?.display_name}</p>
+							<p class="text-[10px]">{$userStore?.email}</p>
+						</div>
+					</div>
+				{/if}
+			</div>
+
 			
-		<button on:click={handleLogout} class="flex items-center gap-2 p-2">
-			Logout
-		</button>
+			 <AlertDialog.Root>
+	<AlertDialog.Trigger
+		class="flex w-full items-center gap-2 rounded-md p-2 "
+	>
+		<LogOut />
+		Logout
+	</AlertDialog.Trigger>
+
+	<AlertDialog.Content class="rounded-lg bg-white p-6 shadow-lg" portalProps={{}}>
+		<AlertDialog.Header class="space-y-2">
+			<AlertDialog.Title class="text-lg font-semibold">
+				Are you absolutely sure you want to logout?
+			</AlertDialog.Title>
+		</AlertDialog.Header>
+
+		<AlertDialog.Footer class="mt-4 flex justify-end gap-2">
+			<AlertDialog.Cancel class="rounded-md border px-4 py-2">
+				Cancel
+			</AlertDialog.Cancel>
+
+			<AlertDialog.Action asChild class="">
+				<button
+					class="rounded-md px-4 py-2 text-white"
+					on:click={handleLogout}
+				>
+					Continue
+				</button>
+			</AlertDialog.Action>
+		</AlertDialog.Footer>
+	</AlertDialog.Content>
+</AlertDialog.Root>
 		</div>
 	{/if}
 </div>

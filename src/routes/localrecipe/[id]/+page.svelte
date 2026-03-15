@@ -104,16 +104,20 @@
 	}
 </script>
 
+<div class="min-h-screen mb-10">
+
+
+
 {#if loading}
 	<div class="flex h-screen items-center justify-center">
 		<p class="text-lg text-gray-500">Loading recipe...</p>
 	</div>
 {:else if recipe}
 	<div class="flex items-center justify-between p-2">
-		<button type="button" on:click={() => history.back()}>
+		<button type="button" class="cursor-pointer" on:click={() => history.back()}>
 			<ArrowLeft size="32" />
 		</button>
-		<button type="button" on:click={openPopup}>
+		<button type="button" class="cursor-pointer" on:click={openPopup}>
 			<Ellipsis size="32" />
 		</button>
 	</div>
@@ -142,7 +146,7 @@
 					
 					<button
 						type="button"
-						class="flex h-9 w-9 items-center justify-center rounded-full bg-white text-green-600"
+						class="flex h-9 w-9 items-center justify-center rounded-full bg-white text-green-600 cursor-pointer"
 						on:click={unsaveRecipe}
 					>
 						<Bookmark size={20} />
@@ -183,13 +187,13 @@
 						<img src="/Location.png" alt="location" class="h-3 sm:h-4" />
 					</div>
 				</div>
-				<button on:click={toggleFollow} class="bg-emerald-600 rounded-lg text-white text-sm w-15 h-8 md:h-8 md:w-15 sm:h-4 transition-colors duration-200 {isfollowing ? 'bg-emerald-500 hover:bg-emrald-600' : 'bg-green-600 hover:bg-green-700'}">{isfollowing ? 'Unfollow' : 'Follow'}</button>
+				<button on:click={toggleFollow} class="bg-emerald-600 rounded-lg text-white text-sm w-15 h-8 md:h-8 md:w-15 sm:h-8 transition-colors cursor-pointer duration-200 {isfollowing ? 'bg-emerald-500 hover:bg-emrald-600' : 'bg-green-600 hover:bg-green-700'}">{isfollowing ? 'Unfollow' : 'Follow'}</button>
 			</div>
 
 	<div class="mt-3 flex gap-2 px-3">
 		<button
 			type="button"
-			class="flex-1 rounded-xl py-3 transition {activeTab === 'ingredient'
+			class="flex-1 rounded-xl py-3 transition cursor-pointer {activeTab === 'ingredient'
 				? 'bg-emerald-600 text-white'
 				: 'bg-gray-200'}"
 			on:click={() => (activeTab = 'ingredient')}
@@ -198,7 +202,7 @@
 		</button>
 		<button
 			type="button"
-			class="flex-1 rounded-xl py-3 transition {activeTab === 'procedure'
+			class="flex-1 rounded-xl py-3 transition cursor-pointer {activeTab === 'procedure'
 				? 'bg-emerald-600 text-white'
 				: 'bg-gray-200'}"
 			on:click={() => (activeTab = 'procedure')}
@@ -242,19 +246,19 @@
 			on:click={closePopup}
 		></button>
 		<div class="absolute top-10 right-5 rounded-lg border-2 bg-white p-4 shadow-lg" role="menu">
-			<button type="button" class="flex items-center gap-2 p-2" on:click={openShare}>
+			<button type="button" class="flex items-center gap-2 p-2 cursor-pointer" on:click={openShare}>
 				<img src="/icon4.png" alt="share-icon" class="h-4 w-4" />
 				share
 			</button>
-			<button type="button" class="flex items-center gap-2 p-2" on:click={openRate}>
+			<button type="button" class="flex items-center gap-2 p-2 cursor-pointer" on:click={openRate}>
 				<img src="/icon2.png" alt="rate-icon" class="h-4 w-4" />
 				Rate Recipe
 			</button>
-			<button type="button" class="flex items-center gap-2 p-2" on:click={navigateToreviewpage}>
+			<button type="button" class="flex items-center gap-2 p-2 cursor-pointer" on:click={navigateToreviewpage}>
 				<img src="/icon3.png" alt="review-icon" class="h-4 w-4" />
 				Review
 			</button>
-			<button type="button" class="flex items-center gap-2 p-2" on:click={unsaveRecipe}>
+			<button type="button" class="flex items-center gap-2 p-2 cursor-pointer" on:click={unsaveRecipe}>
 				<img src="/icon1.png" alt="unsave-icon" class="h-4 w-4" />
 				Remove
 			</button>
@@ -282,7 +286,7 @@
 				/>
 				<button
 					type="button"
-					class="h-12 w-30 rounded-sm bg-emerald-600 p-2 text-white"
+					class="h-12 w-30 rounded-sm bg-emerald-600 p-2 text-white cursor-pointer"
 					on:click={() => navigator.clipboard.writeText(window.location.href)}>Copy Link</button
 				>
 			</div>
@@ -301,7 +305,7 @@
 			<h2 class="mb-3 text-lg font-bold">Rate Recipe</h2>
 			<div class="flex justify-center gap-2 text-2xl">
 				{#each [1, 2, 3, 4, 5] as star}
-					<button type="button" class="text-amber-300" on:click={() => (rating = star)}>
+					<button type="button" class="text-amber-300 cursor-pointer" on:click={() => (rating = star)}>
 						<Star
 							class={rating >= star ? 'fill-amber-400 text-amber-400' : 'text-amber-300'}
 							strokeWidth={1}
@@ -310,7 +314,7 @@
 				{/each}
 			</div>
 			<button
-				class="mt-4 w-full rounded-lg py-2 {rating > 0
+				class="mt-4 w-full rounded-lg py-2 cursor-pointer {rating > 0
 					? 'bg-amber-400 text-white'
 					: 'bg-gray-200 text-gray-400'}"
 				disabled={rating === 0}
@@ -321,3 +325,5 @@
 		</div>
 	{/if}
 {/if}
+
+</div>

@@ -52,7 +52,7 @@
 	}
 </script>
 
-<div class="h-full w-full">
+<div class="min-h-screen w-full">
 
 	<div class="flex h-20 items-center gap-4 px-4">
 		<button on:click={() => history.back()}>

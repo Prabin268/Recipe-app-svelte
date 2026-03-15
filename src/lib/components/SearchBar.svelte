@@ -89,7 +89,7 @@
               <button
                 type="button"
                 on:click={() => selectTime(time)}
-                class={`rounded-xl border px-4 py-2 text-sm ${
+                class={`rounded-xl border px-4 py-2 text-sm cursor-pointer ${
                   selectedTime === time
                     ? 'bg-emerald-600 text-white'
                     : 'border-emerald-600 text-emerald-600'
@@ -108,7 +108,7 @@
               <button
                 type="button"
                 on:click={() => selectRate(rate)}
-                class={`flex items-center gap-1 rounded-xl border px-4 py-2 text-sm ${
+                class={`flex items-center gap-1 rounded-xl border px-4 py-2 text-sm cursor-pointer ${
                   selectedRate === rate
                     ? 'bg-emerald-600 text-white'
                     : 'border-emerald-600 text-emerald-600'
@@ -127,7 +127,7 @@
             <button
               type="button"
               on:click={() => selectCategory('All')}
-              class={`rounded-xl border px-4 py-2 text-sm ${
+              class={`rounded-xl border px-4 py-2 text-sm cursor-pointer ${
                 selectedCategory === 'All'
                   ? 'bg-emerald-600 text-white'
                   : 'border-emerald-600 text-emerald-600'
@@ -140,7 +140,7 @@
               <button
                 type="button"
                 on:click={() => selectCategory(cat)}
-                class={`rounded-xl border px-4 py-2 text-sm ${
+                class={`rounded-xl border px-4 py-2 text-sm cursor-pointer ${
                   selectedCategory === cat
                     ? 'bg-emerald-600 text-white'
                     : 'border-emerald-600 text-emerald-600'
@@ -157,7 +157,7 @@
         <button
           type="button"
           on:click={applyFilter}
-          class="h-12 w-full bg-emerald-600 text-white rounded-xl"
+          class="h-12 w-full bg-emerald-600 text-white rounded-xl cursor-pointer"
         >
           Apply Filter
         </button>

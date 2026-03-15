@@ -11,7 +11,7 @@
 	}
 </script>
 
-<div class="flex h-full w-full flex-col md:p-5">
+<div class="flex min-h-screen w-full flex-col md:p-5">
 	<div
 		class="mt-5 mb-2 flex items-center justify-between p-2 md:mb-5 md:items-center md:justify-center"
 	>

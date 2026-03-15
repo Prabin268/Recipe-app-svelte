@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { House, Bookmark, Bell, User } from 'lucide-svelte';
+  import { userStore } from '$lib/stores/user';
 
   function goToRoute(route: string): void {
     goto(route);
@@ -44,6 +45,18 @@
       <Bell size={30} />
     </button>
 
+    {#if $userStore}
+
+    <button
+      aria-label="Profile"
+      class:text-green-600={$page.url.pathname === '/profilepage'}
+      on:click={() => goToRoute('/profilepage')}
+    >
+      <img src={$userStore?.photo_url} alt="pic" class="rounded-full h-9 w-9">
+    </button>
+
+    {:else}
+
     <button
       aria-label="Profile"
       class:text-green-600={$page.url.pathname === '/profilepage'}
@@ -51,6 +64,9 @@
     >
       <User size={30} />
     </button>
+    {/if}
+
+    
 
   </nav>
   

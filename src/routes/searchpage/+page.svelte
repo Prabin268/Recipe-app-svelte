@@ -36,9 +36,9 @@
 
 		meals = await getRandomMeals();
 
-		if (sessionStorage.getItem('reloaded') === 'true') {
+		if (localStorage.getItem('reloaded') === 'true') {
 			history.replaceState({}, '', '/searchpage');
-			sessionStorage.removeItem('reloaded');
+			localStorage.removeItem('reloaded');
 		}
 
 		isLoading = false;
@@ -84,12 +84,12 @@
 		categories = data.meals.map((c) => c.strCategory);
 
 		const urlCategory: string | null = $page.url.searchParams.get('category');
-		const fromHomepage = sessionStorage.getItem('fromHomepage');
+		const fromHomepage = localStorage.getItem('fromHomepage');
 		if (urlCategory && fromHomepage) {
 			selectedCategory = urlCategory;
 			await runSearch(urlCategory);
 
-			sessionStorage.removeItem('fromHomepage');
+			localStorage.removeItem('fromHomepage');
 		} else {
 			await resetSearch();
 
@@ -104,7 +104,7 @@
 	}
 </script>
 
-<div class="flex flex-col p-4">
+<div class="flex flex-col p-4 min-h-screen">
 	<div class="flex items-center justify-between py-3">
 		<button on:click={goBack}>
 			<ArrowLeft />

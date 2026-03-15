@@ -2,17 +2,15 @@ import { redirect } from '@sveltejs/kit';
 
 export async function handle({ event, resolve }) {
 	const token = event.cookies.get('foodapp_access-token');
+	const path = event.url.pathname;
 
-	const publicRoutes = ['/', '/login', '/signup'];
-    const protectedRoutes = ['/homepage', '/searchpage', '/savedpage', '/profilepage'];
+	if (!token && event.url.pathname.startsWith('/homepage')) {
+		throw redirect(302, '/');
+	}
 
-	if (token && publicRoutes.includes(event.url.pathname)) {
+	 if (token && path === '/') {
         throw redirect(302, '/homepage');
     }
-
-	if (!token && protectedRoutes.some(route => event.url.pathname.startsWith(route))) {
-		throw redirect(302, '/login');
-	}
 
 	return resolve(event);
 }

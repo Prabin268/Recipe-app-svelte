@@ -94,8 +94,8 @@
   }
 </script>
 
-<form on:submit|preventDefault={handleSubmit} class="flex flex-col w-full mx-auto space-y-4
-  px-4 md:px-20 lg:px-20 py-6 mt-6">
+<form on:submit|preventDefault={handleSubmit} class="flex flex-col w-full mx-auto mb-10 space-y-4
+  px-4 md:px-20 lg:px-20 py-6 mt-2 min-h-screen">
   <h1 class="font-bold text-2xl text-center mb-4">Customize Your Recipe</h1>
 
   <label class="flex flex-col">
@@ -177,18 +177,6 @@
   {/if}
 </label>
 
-  <!-- <label class="flex flex-col">
-    <span class="mb-1 font-medium">Ingredients</span>
-    {#each form.ingredients as ingredient, i}
-      <input
-        type="text"
-        placeholder="Enter required ingredients"
-        bind:value={ingredient.name}
-        on:input={(e) => handleIngredientInput((e.target as HTMLInputElement).value, i)}
-        class="mb-2 border-2 rounded-md px-3 py-2"
-      />
-    {/each}
-  </label> -->
  <label class="flex flex-col">
   <span class="mb-1 font-medium">Ingredients</span>
 

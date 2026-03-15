@@ -13,6 +13,7 @@
 	import NewRecipesSkeleton from '$lib/components/NewRecipesSkeleton.svelte';
 	import { goto } from '$app/navigation';
 	import type { Meal, Area, Category } from '$lib/api/meals';
+	import { userStore } from '$lib/stores/user';
 
 	let query: string = '';
 	let areas: Area[] = [];
@@ -27,6 +28,8 @@
 	let selectedCategory: string = 'All';
 	let selectedTime: string = 'All';
 	let selectedRate: number | null = null;
+
+	$:console.log("user store", $userStore)
 
 	onMount(async () => {
 		mealsLoading = true;
@@ -90,13 +93,31 @@
 	}
 </script>
 
-<div class="flex min-h-screen flex-col gap-2 bg-white p-5 md:p-10">
-	<div class="mt-5 flex justify-between gap-2 md:flex-row md:items-center">
+<div class="flex min-h-screen flex-col gap-2 bg-white p-3 md:p-10">
+
+	{#if $userStore}
+	   <div class="mt-5 flex justify-between gap-2 md:flex-row md:items-center">
 		<div>
-			<h1 class="text-3xl font-bold md:text-3xl">Hello Jega</h1>
+			
+		    <h1 class="text-2xl font-bold md:text-3xl">Hello {$userStore?.display_name}</h1>
 			<p class="text-base md:text-xl">What are you cooking today?</p>
 		</div>
+		<button class="cursor-pointer" on:click={navigateToprofile}>
 
+			<img
+			src={$userStore?.photo_url}
+			alt="avatar"
+			class="h-14 w-14 rounded-xl bg-orange-300 md:h-16 md:w-16"
+			/>
+		 </button>
+	</div>
+	{:else}
+	<div class="mt-5 flex justify-between gap-2 md:flex-row md:items-center">
+		<div>
+			
+		    <h1 class="text-3xl font-bold md:text-3xl">Hello Jega</h1>
+			<p class="text-base md:text-xl">What are you cooking today?</p>
+		</div>
 		<button class="cursor-pointer" on:click={navigateToprofile}>
 
 			<img
@@ -106,6 +127,8 @@
 			/>
 		 </button>
 	</div>
+	   {/if}
+	
 
 	<SearchBar
 		enableNavigation={true}
@@ -114,7 +137,7 @@
 		on:categorySelect={(e: CustomEvent<string>) => {
 			const cat = e.detail;
 			if (cat) {
-				sessionStorage.setItem('fromHomepage', 'true');
+				localStorage.setItem('fromHomepage', 'true');
 				goto(`/searchpage?category=${encodeURIComponent(cat)}`);
 			}
 		}}
@@ -122,7 +145,7 @@
 
 	<div class="mt-2 mb-2 flex gap-1 overflow-x-auto whitespace-nowrap [&::-webkit-scrollbar]:hidden">
 		<button
-			class={`rounded-xl px-4 py-2 transition ${
+			class={`rounded-xl px-4 py-2 transition cursor-pointer ${
 				activeArea === 'All' ? 'bg-green-600 text-white' : 'bg-gray-200'
 			}`}
 			on:click={() => selectArea('All')}
@@ -132,7 +155,7 @@
 
 		{#each areas as area (area.strArea)}
 			<button
-				class={`rounded-xl px-4 py-2 transition ${
+				class={`rounded-xl px-4 py-2 transition cursor-pointer ${
 					activeArea === area.strArea ? 'bg-green-600 text-white' : 'bg-gray-200'
 				}`}
 				on:click={() => selectArea(area.strArea ?? '')}
