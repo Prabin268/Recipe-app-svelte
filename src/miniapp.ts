@@ -53,9 +53,9 @@ export function miniAppInit(retryTimes = 3): Promise<any> {
 			if (userDetail?.user_profile) {
 				userDetail.isLoggedIn = true;
 				localStorage.setItem('foodapp_user', JSON.stringify(userDetail.user_profile));
+				userStore.set(userDetail?.user_profile)
 			}
 
-			userStore.set(userDetail?.user_profile)
 
 			let expireTime: number;
 			let currentTime: number = Date.now();

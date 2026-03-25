@@ -7,14 +7,28 @@ export interface User {
   photo_url?: string;
 }
 
-const storedUser = typeof localStorage !== 'undefined'
-  ? JSON.parse(localStorage.getItem('user') || 'null')
-  : null;
-
-export const userStore: Writable<User | null> = writable(storedUser)
-
-userStore.subscribe((value) => {
-  if (typeof localStorage !== 'undefined') {
-    localStorage.setItem('user', JSON.stringify(value) ?? null);
+function safeParseUser(item: string | null): User | null {
+  if (!item) return null;
+  try {
+    return JSON.parse(item);
+  } catch {
+    return null;
   }
-});
+}
+
+const storedUser = localStorage.getItem("user");
+
+export const userStore: Writable<any | null> = writable(storedUser ? JSON.parse(storedUser) : null);
+
+if (typeof window !== 'undefined') {
+  const storedUser = safeParseUser(localStorage.getItem('user'));
+  if (storedUser) userStore.set(storedUser);
+
+  userStore.subscribe((value) => {
+    if (value) {
+      localStorage.setItem('user', JSON.stringify(value));
+    } else {
+      // localStorage.removeItem('user');
+    }
+  });
+}

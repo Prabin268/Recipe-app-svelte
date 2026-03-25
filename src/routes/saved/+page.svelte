@@ -23,7 +23,7 @@
 	}
 
 	function goBack(): void {
-    goto('/homepage');
+    goto('/home');
   }
 </script>
 

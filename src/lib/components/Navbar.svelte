@@ -15,21 +15,21 @@
 
     <button
       aria-label="Home"
-      class:text-green-600={$page.url.pathname === '/homepage'}
-      on:click={() => goToRoute('/homepage')}
+      class:text-green-600={$page.url.pathname === '/home'}
+      on:click={() => goToRoute('/home')}
     >
       <House size={30} />
     </button>
 
     <button
       aria-label="Saved"
-      class:text-green-600={$page.url.pathname === '/savedpage'}
-      on:click={() => goToRoute('/savedpage')}
+      class:text-green-600={$page.url.pathname === '/saved'}
+      on:click={() => goToRoute('/saved')}
     >
       <Bookmark size={30} />
     </button>
 
-    <button on:click={() => goToRoute('/addeditpage')}>
+    <button on:click={() => goToRoute('/addedit')}>
       <img
       src="/menu-icon.png"
       alt="Menu"
@@ -39,8 +39,8 @@
 
     <button
       aria-label="Notifications"
-      class:text-green-600={$page.url.pathname === '/notificationpage'}
-      on:click={() => goToRoute('/notificationpage')}
+      class:text-green-600={$page.url.pathname === '/notification'}
+      on:click={() => goToRoute('/notification')}
     >
       <Bell size={30} />
     </button>
@@ -49,8 +49,8 @@
 
     <button
       aria-label="Profile"
-      class:text-green-600={$page.url.pathname === '/profilepage'}
-      on:click={() => goToRoute('/profilepage')}
+      class:text-green-600={$page.url.pathname === '/profile'}
+      on:click={() => goToRoute('/profile')}
     >
       <img src={$userStore?.photo_url} alt="pic" class="rounded-full h-9 w-9">
     </button>
@@ -59,8 +59,8 @@
 
     <button
       aria-label="Profile"
-      class:text-green-600={$page.url.pathname === '/profilepage'}
-      on:click={() => goToRoute('/profilepage')}
+      class:text-green-600={$page.url.pathname === '/profile'}
+      on:click={() => goToRoute('/profile')}
     >
       <User size={30} />
     </button>

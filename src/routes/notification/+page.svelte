@@ -7,7 +7,7 @@
 	const filterItems: Array<'All' | 'Read' | 'Unread'> = ['All', 'Read', 'Unread'];
 
 	function goBack(): void {
-		goto('/homepage');
+		goto('/home');
 	}
 </script>
 

@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { ArrowLeft } from 'lucide-svelte';
 	import SearchBar from '$lib/components/SearchBar.svelte';
-	import SearchPageSkeleton from '$lib/components/SearchPageSkeleton.svelte';
+	import SearchSkeleton from '$lib/components/SearchSkeleton.svelte';
 	import { searchMeals, getRandomMeals } from '$lib/api/meals';
 	import type { Meal } from '$lib/api/meals';
 
@@ -37,7 +37,7 @@
 		meals = await getRandomMeals();
 
 		if (localStorage.getItem('reloaded') === 'true') {
-			history.replaceState({}, '', '/searchpage');
+			history.replaceState({}, '', '/search');
 			localStorage.removeItem('reloaded');
 		}
 
@@ -66,14 +66,10 @@
 		meals = results;
 
 		if (selectedCategory !== 'All') {
-			history.replaceState({}, '', `/searchpage?category=${encodeURIComponent(selectedCategory)}`);
+			history.replaceState({}, '', `/search?category=${encodeURIComponent(selectedCategory)}`);
 		}
 
 		isLoading = false;
-	}
-
-	function goBack(): void {
-		goto('/homepage');
 	}
 
 	onMount(async () => {
@@ -84,16 +80,16 @@
 		categories = data.meals.map((c) => c.strCategory);
 
 		const urlCategory: string | null = $page.url.searchParams.get('category');
-		const fromHomepage = localStorage.getItem('fromHomepage');
-		if (urlCategory && fromHomepage) {
+		const fromHome = localStorage.getItem('fromHome');
+		if (urlCategory && fromHome) {
 			selectedCategory = urlCategory;
 			await runSearch(urlCategory);
 
-			localStorage.removeItem('fromHomepage');
+			localStorage.removeItem('fromHome');
 		} else {
 			await resetSearch();
 
-			history.replaceState({}, '', '/searchpage');
+			history.replaceState({}, '', '/search');
 		}
 
 		isLoading = false;
@@ -101,6 +97,10 @@
 
 	function openRecipe(id: string): void {
 		goto(`/recipe/${id}`);
+	}
+
+	function goBack(): void {
+		goto('/home');
 	}
 </script>
 
@@ -146,7 +146,7 @@
 	{#if isLoading}
 		<div class="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3">
 			{#each Array(6) as _}
-				<SearchPageSkeleton />
+				<SearchSkeleton />
 			{/each}
 		</div>
 	{:else}

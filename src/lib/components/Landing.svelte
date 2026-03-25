@@ -2,6 +2,27 @@
 	import { miniAppInit } from '../../miniapp';
 	import { goto } from '$app/navigation';
 	import { userStore } from '$lib/stores/user';
+	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
+	
+
+	onMount(() => {
+		const unsubscribe = userStore.subscribe((user) => {
+			if (user) {
+				goto('/home');
+			} else {
+
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                
+                const normalUser = JSON.parse(storedUser);
+                userStore.set(normalUser); 
+                // goto('/home');
+            }
+		}
+		});
+		return () => unsubscribe();
+	});
 
 	let currentView: 'landing' | 'login' | 'signup' = 'landing';
 	let loading = false;
@@ -30,6 +51,42 @@
 		showSignup();
 	}
 
+	const handleLogin = () => {
+		if (!email || !password) {
+			error = 'Email and password required';
+			return;
+		}
+
+		const normalUser = {
+			id: email,
+			email: email,
+			display_name: name || email.split('@')[0],
+			photo_url: '/profile-pic.png'
+		};
+
+		userStore.set(normalUser);
+		localStorage.setItem('user', JSON.stringify(normalUser));
+		console.log(get(userStore));
+		goto('/home');
+	};
+
+	const handleSignup = () => {
+		if (!name || !email || !password) {
+			error = 'All fields are required';
+			return;
+		}
+
+		const newUser = {
+			id: email,
+			email,
+			display_name: name,
+			photo_url: '/profile-pic.png'
+		};
+
+		userStore.set(newUser);
+		goto('/home');
+	};
+
 	const handleGoogleLogin = async () => {
 		const miniapp = window.miniapp;
 		if (!miniapp) return;
@@ -39,7 +96,7 @@
 			const res = await miniapp.login('g');
 			console.log('login res', res);
 			userStore.set(res?.user_profile);
-			goto('/homepage');
+			goto('/home');
 		} catch (err) {
 			console.log('miniapp login error', err);
 		} finally {
@@ -74,7 +131,7 @@
 
 {#if currentView === 'login'}
 	<div
-		class="fixed flex h-full w-full flex-col bg-gray-100 bg-cover bg-center p-1
+		class="fixed flex h-full w-full flex-col bg-gray-100 bg-cover bg-center p-1 
          md:flex md:min-h-screen md:items-center md:justify-center"
 	>
 		<div class="mx-auto min-h-screen w-full max-w-md space-y-4 rounded-2xl p-8">
@@ -83,7 +140,7 @@
 				<p class="text-3xl text-gray-600">Welcome Back!</p>
 			</div>
 
-			<form action="?login" method="POST" class="space-y-4 md:space-y-0.5">
+			<form on:submit|preventDefault={handleLogin} class="space-y-4 md:space-y-0.5">
 				<div class="flex flex-col">
 					<label class="md:text-md flex flex-col gap-2 text-[20px] font-semibold text-gray-700">
 						Email
@@ -117,7 +174,7 @@
 				</div>
 
 				<button
-					on:click={() => goto('/homepage')}
+					type="submit"
 					class="w-full rounded-lg bg-[rgba(18,149,117,1)] py-5 font-semibold text-white transition duration-300"
 				>
 					Sign In →
@@ -201,7 +258,7 @@
 				</p>
 			</div>
 
-			<form action="?signup" method="POST" class="space-y-4 md:mt-0 md:mb-1">
+			<form on:submit|preventDefault={handleSignup} class="space-y-4 md:mt-0 md:mb-1">
 				<div class="flex flex-col">
 					<label class="flex flex-col gap-1 text-[20px] font-semibold text-gray-700 md:text-sm">
 						Name
@@ -266,7 +323,7 @@
 				</div>
 
 				<button
-					on:click={() => goto('/homepage')}
+					type="submit"
 					class="w-full rounded-lg bg-[rgba(18,149,117,1)] py-5 font-semibold text-white transition duration-300 md:flex md:h-10 md:items-center md:justify-center"
 				>
 					Sign Up →

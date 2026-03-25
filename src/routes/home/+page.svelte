@@ -13,15 +13,15 @@
 	import NewRecipesSkeleton from '$lib/components/NewRecipesSkeleton.svelte';
 	import { goto } from '$app/navigation';
 	import type { Meal, Area, Category } from '$lib/api/meals';
-	import { userStore } from '$lib/stores/user';
+	import { userStore, type User } from '$lib/stores/user';
+	import { get } from 'svelte/store';
 
-	let query: string = '';
 	let areas: Area[] = [];
 	let allMeals: Meal[] = [];
 	let meals: Meal[] = [];
 	let activeArea: string = 'All';
-	let mealsLoading: boolean = false;
-	let newRecipesLoading: boolean = false;
+	let mealsLoading = false;
+	let newRecipesLoading = false;
 	let newRecipes: Meal[] = [];
 	let categories: Category[] = [];
 
@@ -29,12 +29,10 @@
 	let selectedTime: string = 'All';
 	let selectedRate: number | null = null;
 
-	$:console.log("user store", $userStore)
-
 	onMount(async () => {
+		console.log("UserStore: 33", $userStore )
 		mealsLoading = true;
 		newRecipesLoading = true;
-		
 		try {
 			areas = await getAreas();
 			allMeals = await searchMeals('');
@@ -53,11 +51,7 @@
 		activeArea = area;
 		mealsLoading = true;
 		try {
-			if (area === 'All') {
-				meals = allMeals;
-			} else {
-				meals = await getMealsByArea(area);
-			}
+			meals = area === 'All' ? allMeals : await getMealsByArea(area);
 		} catch (err) {
 			console.error('Failed to load meals', err);
 		} finally {
@@ -66,69 +60,41 @@
 	}
 
 	function pushYoutube(strYoutube?: string) {
-		if (typeof window === 'undefined') return;
 		if (!strYoutube) return;
 		localStorage.setItem('currentYoutube', strYoutube);
 	}
 
-	function navigateToSearch(): void {
-		goto('/searchpage');
+	function navigateToSearch() {
+		goto('/search');
 	}
 
-	function navigateToprofile(): void {
-		goto('/profilepage');
+	function navigateToprofile() {
+		goto('/profile');
 	}
 
-	function onCategorySelect(cat: string): void {
-		selectedCategory = cat;
-		console.log('Category selected:', cat);
-	}
-
-	function onApplyFilter(): void {
-		console.log('Filter applied!', { selectedCategory, selectedTime, selectedRate });
-	}
-
-	function openRecipe(id: string): void {
+	function openRecipe(id: string) {
 		goto(`/recipe/${id}`);
 	}
 </script>
 
 <div class="flex min-h-screen flex-col gap-2 bg-white p-3 md:p-10">
-
-	{#if $userStore}
-	   <div class="mt-5 flex justify-between gap-2 md:flex-row md:items-center">
-		<div>
-			
-		    <h1 class="text-2xl font-bold md:text-3xl">Hello {$userStore?.display_name}</h1>
-			<p class="text-base md:text-xl">What are you cooking today?</p>
-		</div>
-		<button class="cursor-pointer" on:click={navigateToprofile}>
-
-			<img
-			src={$userStore?.photo_url}
-			alt="avatar"
-			class="h-14 w-14 rounded-xl bg-orange-300 md:h-16 md:w-16"
-			/>
-		 </button>
-	</div>
-	{:else}
+	
 	<div class="mt-5 flex justify-between gap-2 md:flex-row md:items-center">
 		<div>
-			
-		    <h1 class="text-3xl font-bold md:text-3xl">Hello Jega</h1>
+			<h1 class="text-2xl font-bold md:text-3xl">
+				Hello {get(userStore)?.display_name}
+			</h1>
 			<p class="text-base md:text-xl">What are you cooking today?</p>
 		</div>
-		<button class="cursor-pointer" on:click={navigateToprofile}>
 
+		<button class="cursor-pointer" on:click={navigateToprofile}>
 			<img
-			src="./avatar.png"
-			alt="avatar"
-			class="h-14 w-14 rounded-xl bg-orange-300 md:h-16 md:w-16"
+				src={get(userStore)?.photo_url}
+				alt="avatar"
+				class="h-14 w-14 rounded-xl bg-orange-300 md:h-16 md:w-16"
 			/>
-		 </button>
+		</button>
 	</div>
-	   {/if}
-	
 
 	<SearchBar
 		enableNavigation={true}
@@ -137,8 +103,8 @@
 		on:categorySelect={(e: CustomEvent<string>) => {
 			const cat = e.detail;
 			if (cat) {
-				localStorage.setItem('fromHomepage', 'true');
-				goto(`/searchpage?category=${encodeURIComponent(cat)}`);
+				localStorage.setItem('fromHome', 'true');
+				goto(`/search?category=${encodeURIComponent(cat)}`);
 			}
 		}}
 	/>
@@ -190,7 +156,6 @@
 	{:else}
 		<div class="flex flex-col h-auto p-2">
 			<p class="text-2xl font-bold">New Recipes</p>
-
 			<div class="flex items-center h-42 md:h-50 gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden">
 				{#each newRecipes as recipe (recipe.idMeal)}
 					<div
@@ -205,13 +170,11 @@
 							<h1 class="truncate text-lg font-semibold">{recipe.strMeal}</h1>
 							<img src="./Rating.png" alt="rating" class="h-5 w-25" />
 						</div>
-
 						<img
 							src={recipe.strMealThumb}
 							alt={recipe.strMeal}
 							class="absolute -top-5 right-3 h-14 w-14 rounded-full object-cover md:h-15 md:w-15"
 						/>
-
 						<div class="flex gap-8 p-2">
 							<img src="./Creator.png" alt="creator" />
 							<img src="./Time.png" alt="time" />

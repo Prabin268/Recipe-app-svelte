@@ -72,7 +72,7 @@
 	async function unsaveRecipe() {
 		if (!recipe) return;
 		await deleteRecipe(recipe.id);
-		goto('/profilepage');
+		goto('/profile');
 	}
 
 	function openPopup(): void {
@@ -95,8 +95,8 @@
 		showRateDialog = false;
 	}
 
-	function navigateToreviewpage(): void {
-		goto(`/reviewpage`);
+	function navigateToreview(): void {
+		goto(`/review`);
 	}
 
 	function toggleFollow () {
@@ -129,7 +129,7 @@
 			<div class="w-full p-2">
 
 				<div
-						class="relative w-full h-50 rounded-2xl inset-0 bg-cover bg-center md:h-80 md:mr-3"
+						class="relative w-full h-55 rounded-2xl inset-0 bg-cover bg-center md:h-80 md:mr-3"
 						style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.9)),url({recipe.imageUrl})"
 					>
 				<div class="flex justify-center items-center gap-2 absolute top-2 right-2 rounded-xl md:w-20 md:h-8 w-15  bg-orange-200">
@@ -157,7 +157,7 @@
 
 					
 			{:else}
-				<video src={recipe.videoUrl} controls class="h-60 w-full rounded-xl p-2 md:h-80">
+				<video src={recipe.videoUrl} controls class="h-60 w-full rounded-2xl p-2 md:h-80">
 					<track kind="captions" label="English captions" src="" default />
 				</video>
 			{/if}
@@ -254,7 +254,7 @@
 				<img src="/icon2.png" alt="rate-icon" class="h-4 w-4" />
 				Rate Recipe
 			</button>
-			<button type="button" class="flex items-center gap-2 p-2 cursor-pointer" on:click={navigateToreviewpage}>
+			<button type="button" class="flex items-center gap-2 p-2 cursor-pointer" on:click={navigateToreview}>
 				<img src="/icon3.png" alt="review-icon" class="h-4 w-4" />
 				Review
 			</button>

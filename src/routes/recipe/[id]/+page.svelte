@@ -95,8 +95,8 @@
 		showShareDialog = false;
 		showRateDialog = false;
 	}
-	function navigateToreviewpage(): void {
-		goto(`/reviewpage`);
+	function navigateToreview(): void {
+		goto(`/review`);
 	}
 	function unsaveMeal(): void {
 		if (!meal) return;
@@ -114,7 +114,7 @@
 </script>
 
 <div
-	class="relative min-h-dvh w-full bg-gray-50 p-2 [-ms-overflow-style:none] [scrollbar-width:none] sm:p-5 lg:[-ms-overflow-style:auto] lg:[scrollbar-width:auto] [&::-webkit-scrollbar]:hidden lg:[&::-webkit-scrollbar]:block"
+	class="relative min-h-dvh w-full bg-gray-50 p-2 [-ms-overflow-style:none] [scrollbar-width:none] sm:p-10 lg:[-ms-overflow-style:auto] lg:[scrollbar-width:auto] [&::-webkit-scrollbar]:hidden lg:[&::-webkit-scrollbar]:block"
 >
 	{#if loading}
 		<div class="flex h-screen items-center justify-center">
@@ -224,11 +224,11 @@
 					class="mx-3 mt-4 max-h-100 space-y-3 overflow-auto [-ms-overflow-style:none] [scrollbar-width:none] sm:max-h-125 lg:[-ms-overflow-style:auto] lg:[scrollbar-width:auto] [&::-webkit-scrollbar]:hidden lg:[&::-webkit-scrollbar]:block"
 				>
 					{#each ingredients as item}
-						<div class="flex justify-between rounded-xl bg-gray-100 p-4">
+						<div class="flex justify-between items-center rounded-xl bg-gray-100 p-4 gap-2">
 							<div class="flex h-10 w-10 items-center rounded-lg bg-white">
 								<img src={item.image} alt={item.name} class="h-8 w-8" />
 							</div>
-							<div class="flex w-full justify-between">
+							<div class="flex w-full h-full justify-between">
 								<h1>{item.name}</h1>
 								<p class="text-gray-500">{item.measure}</p>
 							</div>
@@ -268,7 +268,7 @@
 			<button class="flex items-center gap-2 p-2 cursor-pointer" on:click={openRate}>
 				<img src="/icon2.png" alt="rate-icon" class="h-4 w-4" /> Rate Recipe
 			</button>
-			<button class="flex items-center gap-2 p-2 cursor-pointer" on:click={navigateToreviewpage}>
+			<button class="flex items-center gap-2 p-2 cursor-pointer" on:click={navigateToreview}>
 				<img src="/icon3.png" alt="review-icon" class="h-4 w-4" /> Review
 			</button>
 			<button class="flex items-center gap-2 p-2 cursor-pointer" on:click={unsaveMeal}>
