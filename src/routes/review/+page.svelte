@@ -2,6 +2,7 @@
 	import { ArrowLeft } from 'lucide-svelte';
 	import { savedMeals } from '$lib/stores/savedMeals';
 	import { onMount } from 'svelte';
+	import  review_pic from '$lib/assets/review_pic.jpg';
 
 	let inputValue: string = '';
 
@@ -97,7 +98,7 @@
 			<div class="rounded-lg bg-gray-100 p-4">
 				<div class="flex items-center gap-3">
 					<img
-						src="/review-pic.jpg"
+						src={review_pic}
 						alt="profile"
 						class="h-10 w-10 rounded-full"
 					/>

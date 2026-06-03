@@ -243,7 +243,7 @@
 		</button>
 		<div class="absolute top-12 right-4 z-50 w-64 rounded-lg bg-white p-2 shadow-lg">
 			<div class="flex w-full items-center gap-2 p-2 text-left hover:bg-gray-100">
-				<img src={get(userStore)?.photo_url ?? '/default-avatar.png'} alt="pic" class="h-10 w-10 rounded-full" />
+				<img src={get(userStore)?.photo_url ?? '../../default-avatar.png'} alt="pic" class="h-10 w-10 rounded-full" />
 				<div class="flex flex-col justify-center text-[10px]">
 					<p>{get(userStore)?.display_name}</p>
 					<p>{get(userStore)?.email}</p>

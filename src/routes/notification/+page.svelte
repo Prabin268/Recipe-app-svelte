@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { ArrowLeft } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
+	import Docs from '$lib/assets/Docs.png';
 
 	let activeItem: 'All' | 'Read' | 'Unread' = 'All';
 
@@ -49,7 +50,7 @@
 						Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum
 					</p>
 					<p class="text-xs text-gray-400">10 mins ago</p>
-					<img src="/Docs.png" alt="notification icon" class="absolute top-3 right-3 h-5" />
+					<img src={Docs} alt="notification icon" class="absolute top-3 right-3 h-5" />
 				</div>
 
 				<div class="relative rounded-2xl bg-gray-100 p-3">
@@ -58,7 +59,7 @@
 						Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum
 					</p>
 					<p class="text-xs text-gray-400">30 mins ago</p>
-					<img src="/Docs.png" alt="notification icon" class="absolute top-3 right-3 h-5" />
+					<img src={Docs} alt="notification icon" class="absolute top-3 right-3 h-5" />
 				</div>
 			</div>
 
@@ -71,7 +72,7 @@
 						Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum
 					</p>
 					<p class="text-xs text-gray-400">30 mins ago</p>
-					<img src="/Docs.png" alt="notification icon" class="absolute top-3 right-3 h-5" />
+					<img src={Docs} alt="notification icon" class="absolute top-3 right-3 h-5" />
 				</div>
 
 				<div class="relative rounded-2xl bg-gray-100 p-3">
@@ -80,7 +81,7 @@
 						Lorem Ipsum tempor incididunt ut labore et dolore,in voluptate velit esse cillum
 					</p>
 					<p class="text-xs text-gray-400">30 mins ago</p>
-					<img src="/Docs.png" alt="notification icon" class="absolute top-3 right-3 h-5" />
+					<img src={Docs} alt="notification icon" class="absolute top-3 right-3 h-5" />
 				</div>
 			</div>
 		</div>

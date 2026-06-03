@@ -3,6 +3,7 @@
 	import { savedMeals } from '$lib/stores/savedMeals';
 	import type { Meal } from '$lib/api/meals';
 	import { goto } from '$app/navigation';
+	import	Rating2 from '$lib/assets/Rating2.png';
 
 	export let meal: Meal;
 
@@ -25,7 +26,7 @@
 			<img src={meal.strMealThumb} alt={meal.strMeal} class="h-30 w-30 rounded-full object-cover" />
 
 			<div class="absolute top-12 right-0">
-				<img src="/Rating2.png" alt="star2" class="h-7 w-15" />
+				<img src={Rating2} alt="star2" class="h-7 w-15" />
 			</div>
 		</div>
 

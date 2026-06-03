@@ -4,22 +4,21 @@
 	import { userStore } from '$lib/stores/user';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
-	
+	import hat from '$lib/assets/hat.png';
+	import image from '$lib/assets/image.png';
 
 	onMount(() => {
 		const unsubscribe = userStore.subscribe((user) => {
 			if (user) {
 				goto('/home');
 			} else {
-
-            const storedUser = localStorage.getItem('user');
-            if (storedUser) {
-                
-                const normalUser = JSON.parse(storedUser);
-                userStore.set(normalUser); 
-                // goto('/home');
-            }
-		}
+				const storedUser = localStorage.getItem('user');
+				if (storedUser) {
+					const normalUser = JSON.parse(storedUser);
+					userStore.set(normalUser);
+					// goto('/home');
+				}
+			}
 		});
 		return () => unsubscribe();
 	});
@@ -108,12 +107,14 @@
 {#if currentView === 'landing'}
 	<div
 		class="flex min-h-screen w-full flex-col justify-center bg-cover bg-center"
-		style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,1)),url('/image.png')"
+		style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,1)),url({image})"
 	>
 		<div
 			class="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center gap-14"
 		>
-			<div class="h-10 w-20"><img src="/hat.png" alt="hat" /></div>
+			<div class="h-10 w-20">
+				<img src={hat} alt="hat" />
+			</div>
 			<h1 class="mb-30 text-[20px] text-white">100K+ Premium Recipe</h1>
 			<div class="flex flex-col">
 				<h1 class="text-center text-[50px] font-bold text-white">Get <br /> Cooking</h1>
@@ -131,7 +132,7 @@
 
 {#if currentView === 'login'}
 	<div
-		class="fixed flex h-full w-full flex-col bg-gray-100 bg-cover bg-center p-1 
+		class="fixed flex h-full w-full flex-col bg-gray-100 bg-cover bg-center p-1
          md:flex md:min-h-screen md:items-center md:justify-center"
 	>
 		<div class="mx-auto min-h-screen w-full max-w-md space-y-4 rounded-2xl p-8">

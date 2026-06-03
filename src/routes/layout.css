@@ -111,6 +111,14 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+body {
+  cursor: default;
+}
+
+h1, h2, h3, p, img, button, span {
+  user-select: none
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

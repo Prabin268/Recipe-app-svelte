@@ -3,6 +3,10 @@
 	"compilerOptions": {
 		"allowJs": true,
 		"checkJs": true,
-		"moduleResolution": "bundler"
+		"moduleResolution": "bundler",
+		"types": [
+      "vite-plugin-pwa/info", 
+      "vite-plugin-pwa/client", 
+      "vite-plugin-pwa/svelte"]
 	}
 }

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
+	import { goto, replaceState } from '$app/navigation';
 	import { ArrowLeft } from 'lucide-svelte';
 	import SearchBar from '$lib/components/SearchBar.svelte';
 	import SearchSkeleton from '$lib/components/SearchSkeleton.svelte';
@@ -37,7 +37,7 @@
 		meals = await getRandomMeals();
 
 		if (localStorage.getItem('reloaded') === 'true') {
-			history.replaceState({}, '', '/search');
+			replaceState('/search', {});
 			localStorage.removeItem('reloaded');
 		}
 
@@ -66,7 +66,7 @@
 		meals = results;
 
 		if (selectedCategory !== 'All') {
-			history.replaceState({}, '', `/search?category=${encodeURIComponent(selectedCategory)}`);
+			replaceState(`/search?category=${encodeURIComponent(selectedCategory)}`, {});
 		}
 
 		isLoading = false;
@@ -89,7 +89,7 @@
 		} else {
 			await resetSearch();
 
-			history.replaceState({}, '', '/search');
+			replaceState('/search', {});
 		}
 
 		isLoading = false;

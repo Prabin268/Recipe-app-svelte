@@ -8,6 +8,7 @@ export interface Meal {
   strInstructions?: string;
   strMealThumb?: string;
   strYoutube?: string;
+  [key: string]: string | undefined;
 }
 
 export interface Category {
@@ -33,10 +34,26 @@ export async function getAreas(): Promise<Area[]> {
   return data.meals || [];
 }
 
-export async function getRandomMeals(): Promise<Meal[]> {
-  const res = await fetch(`${BASE_URL}/search.php?f=c`);
-  const data: { meals: Meal[] | null } = await res.json();
-  return data.meals || [];
+// export async function getRandomMeals(): Promise<Meal[]> {
+//   const res = await fetch(`${BASE_URL}/search.php?f=c`);
+//   const data: { meals: Meal[] | null } = await res.json();
+//   return data.meals || [];
+// }
+export async function getRandomMeals(count: number = 10): Promise<Meal[]> {
+  const results = await Promise.all(
+    Array.from({ length: count }, () =>
+      fetch(`${BASE_URL}/random.php`)
+        .then(r => r.json())
+        .then((d: { meals: Meal[] | null }) => d.meals?.[0] ?? null)
+    )
+  );
+
+  const seen = new Set<string>();
+  return results.filter((meal): meal is Meal => {
+    if (!meal || seen.has(meal.idMeal)) return false;
+    seen.add(meal.idMeal);
+    return true;
+  });
 }
 
 export async function getMealsByArea(area: string): Promise<Meal[]> {

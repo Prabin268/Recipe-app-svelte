@@ -6,26 +6,18 @@
 	import { onMount } from 'svelte';
 	import { miniAppInit } from '../miniapp';
 	import { goto } from '$app/navigation';
-	import { userStore, type User } from '$lib/stores/user';
+	import { userStore } from '$lib/stores/user';
 	import { get } from 'svelte/store';
-	import { dev } from '$app/environment';
+	import { pwaInfo } from 'virtual:pwa-info';
 
 	const publicRoutes: string[] = ['/'];
-
 	let hideLayout: boolean;
 	let userLoaded = false;
-
 	$: hideLayout = publicRoutes.includes($page.url.pathname);
+	$: webManifestLink = pwaInfo?.webManifest.linkTag ?? '';
 
 	onMount(() => {
 		miniAppInit();
-
-		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker
-				.register('/service-worker.js', { type: dev ? 'module' : 'classic' })
-				.then(() => console.log('Service Worker registered'))
-				.catch((err) => console.error('SW registration failed', err));
-		}
 
 		const user = get(userStore);
 		const path = $page.url.pathname;
@@ -41,7 +33,6 @@
 		const onPopState = () => {
 			const currentUser = get(userStore);
 			const currentPath = window.location.pathname;
-
 			if (!currentUser && !publicRoutes.includes(currentPath)) {
 				goto('/', { replaceState: true });
 			} else if (currentUser && currentPath === '/') {
@@ -50,20 +41,22 @@
 		};
 
 		window.addEventListener('popstate', onPopState);
-		return () => window.removeEventListener('popstate', onPopState);
-	});
 
-	$: if (userLoaded) {
-		const user = get(userStore);
-		console.log('User:', user);
-		console.log('Path:', $page.url.pathname);
-	}
+		import('virtual:pwa-register').then(({ registerSW }) => {
+			const updateSW = registerSW({
+				immediate: true,
+			});
+		});
+
+		return () => {
+			window.removeEventListener('popstate', onPopState);
+		};
+	});
 </script>
 
 <svelte:head>
 	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-	<link rel="manifest" href="/manifest.json" />
-	<meta name="theme-color" content="#f97316" />
+	{@html webManifestLink}
 </svelte:head>
 
 {#if !hideLayout}
@@ -75,7 +68,7 @@
 		</main>
 	</div>
 {:else}
-	<main class="min-h-screen bg-gray-50 dark:bg-gray-900">
+	<main class="max-h-screen bg-gray-50 dark:bg-gray-900">
 		<slot />
 	</main>
 {/if}

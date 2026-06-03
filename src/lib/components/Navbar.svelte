@@ -3,6 +3,7 @@
   import { page } from '$app/stores';
   import { House, Bookmark, Bell, User } from 'lucide-svelte';
   import { userStore } from '$lib/stores/user';
+  import menuicon from '$lib/assets/menuicon.png';
 
   function goToRoute(route: string): void {
     goto(route);
@@ -31,7 +32,7 @@
 
     <button on:click={() => goToRoute('/addedit')}>
       <img
-      src="/menu-icon.png"
+      src={menuicon}
       alt="Menu"
       class="absolute bottom-12 right-42 h-12 w-12 cursor-pointer"
       />
@@ -65,8 +66,6 @@
       <User size={30} />
     </button>
     {/if}
-
-    
 
   </nav>
   
